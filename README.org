@@ -2,7 +2,7 @@ node-fanfou or fanfou.js
 
 The demonstration of fanfou api via backbone.js + nodejs.
 
-= Setup and run =
+h1. Setup and run
 * create a settings.js according to settings.sample.js and fill settings fields.
 * run % node daemon.js
 * visit http://localhost:3000 

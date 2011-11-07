@@ -10,6 +10,7 @@
 		visibility: hidden;
 		overflow: hidden;
 }
+.hide { display: none;}
 
 ul { list-style: none;}
 body, div { margin: 0; padding: 0; }
@@ -20,6 +21,18 @@ a { text-decoration: none; }
 	border-bottom: 1px solid #AAA;
 	background: #EEE;	
 	padding: 6px 0;
+}
+
+#commands {
+	  text-align: center;
+	  padding: 2px 4px;
+}
+
+#commands button {
+	  padding: 2px 6px;
+	  height: 32px;
+	  border: 1px solid #AAA;
+	  font-size: 18px;
 }
 
 .notify {

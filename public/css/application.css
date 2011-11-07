@@ -1,0 +1,65 @@
+.left { float: left; }
+.right { float: right; }
+.clear { clear: both;}
+.clearfix { display: block; }
+.clearfix:after { 
+		content: '\0020';
+		display: block;
+		height: 0;
+		clear: both;
+		visibility: hidden;
+		overflow: hidden;
+}
+
+ul { list-style: none;}
+body, div { margin: 0; padding: 0; }
+body { font-size: 20px;}
+a { text-decoration: none; }
+
+#header {
+	border-bottom: 1px solid #AAA;
+	background: #EEE;	
+	padding: 6px 0;
+}
+
+.notify {
+	padding: 3px 24px;
+	background: lightyellow;
+	text-align: center;
+}
+
+#add {
+     font-size: 26px;
+     line-height: 22px;
+     padding: 2px 10px;
+     margin: 2px 4px 2px 2px;
+     border-radius: 5px 5px;
+     font-weight: bold;
+     border: 1px solid #AAA;
+}
+
+#logo {
+      background: url(/img/logo.png) no-repeat;
+      width: 150px;
+      height: 30px;
+      margin-left: 10px;
+}
+
+#loading {
+	 width: 30px;
+}
+
+#timeline .status-row { padding: 6px 12px; }
+#timeline .avatar { width: 54px; height: 50px; }
+.avatar img { border-radius: 5px 5px; }
+#timeline .status-content { } /* max-width: 900px;}*/
+
+#update-status {
+	       padding: 6px 20px;
+}
+
+#update-status textarea {
+	       width: 100%;
+	       height: 70px;
+}
+

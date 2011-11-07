@@ -1,0 +1,94 @@
+<html>
+  <head>
+    <title>Fanfou ABC</title>
+    <meta name="viewport" content="user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="/css/application.css"></link>
+    <script text="text/javascript" src="/js/jquery-1.7.min.js"></script>
+    <script text="text/javascript" src="/js/jquery.form.js"></script>
+    <script text="text/javascript" src="/js/underscore-min.js"></script>
+    <script text="text/javascript" src="/js/mustache.min.js"></script>
+    <script text="text/javascript" src="/js/backbone-min.js"></script>
+
+    <script text="text/javascript" src="/js/model.js"></script>
+    <script text="text/javascript" src="/js/view.js"></script>
+    <script text="text/javascript" src="/js/app.js"></script>
+    <script text="text/javascdript" src="/js/mockupdata.js"></script>
+    <script language="javascript">
+      //<!--
+      $(document).ready(function () {
+         App.initialize();
+      });
+      //-->
+    </script>
+  </head>
+  <body>
+    <div id="header">
+      <div id="add" class="clearfix right" onclick="App.gohash('#!/update');">+</div>
+      <div id="loading" class="clearfix right" onclick="App.gohash('#!/update');">...</div>
+      <div id="logo" class="clearfix" onclick="App.gohash('#');"></div>
+    </div>
+    <div id="wrapper" class="clearfix">
+      <div id="content"></div>
+    </div>
+
+    <div id="footer" class="clearfix">
+    </div>
+
+    <script id="panel-template" type="text/template">
+      <div id="logo" class="clearfix"></div>
+      <ul id="navlist">
+	<li><a href="#">首页</a></li>
+	<li><a href="#">个人空间</a></li>
+      </ul>
+    </script>
+
+    <script id="notify-template" type="text/template">
+      <p class="notify">{{{ content }}}</p>
+    </script>
+
+    <script id="status-template" type="text/template">
+      <div id="timeline">
+	<div class="status-row clearfix" rel="{{ id }}">
+	  {{# user }}
+	  <div class="avatar left">
+	    <a href="javascript:App.gotoUserLink('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
+	  </div>
+	  <div class="" style="clear: top;"></div>
+	  <div class="status-content">
+            <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
+	    {{/ user }}
+	    {{{ text }}}
+	  </div>
+	</div>
+      </div>
+    </script>
+
+    <script id="timeline-template" type="text/template">
+      <div id="timeline">
+	{{#timeline }}
+	<div class="status-row clearfix" rel="{{ id }}">
+	  {{# user }}
+	  <div class="avatar left">
+	    <a href="javascript:App.gotoUserLink('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
+	  </div>
+	  <div class="" style="clear: top;"></div>
+	  <div class="status-content">
+            <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
+	    {{/ user }}
+	    {{{ text }}}
+	  </div>
+	</div>
+	{{/timeline }}
+      </div>
+    </script>
+    
+    <script id="update-status-template" type="text/template">
+      <div id="update-status" class="clearfix">
+	<form action="/proxy/statuses/update" method="POST">
+	  <textarea name="status"></textarea>
+	  <input id="exec" class="right" type="submit"></input>
+	</form>
+      </div>
+    </script>
+  </body>
+</html>

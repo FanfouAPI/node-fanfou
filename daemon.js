@@ -74,5 +74,14 @@ app.post('/proxy/:section/:action', apivendor.require_login, function(req, res) 
 	    });
     });
 
+app.get('/rconsole/:level', apivendor.require_login, function (req, res) {
+	var log = console[req.params.level];
+	if(log == undefined) {
+	    log = console.log
+	}
+	log('REMOTE', req.query.w);
+	res.send('ok');
+    });
+
 app.listen(settings.daemon_port);
 console.log("listening on http://localhost:" + settings.daemon_port);

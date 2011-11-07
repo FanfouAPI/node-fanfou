@@ -77,7 +77,7 @@ var App = function () {
 		$('#loading').hide();
 	    });
 	$('#loading').hide();
-	console.info('app initialized');
+	rconsole.info('app initialized');
     };
 
     app.getMentions = function () {

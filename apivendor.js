@@ -87,9 +87,6 @@ exports.from_request = function (req, callback_url) {
 	inst.oa.post(path,
 		     req.session.oauth_access_token,
 		     req.session.oauth_access_token_secret,
-		     //req.cookies.oauth_access_token,
-		     //req.cookies.oauth_access_token_secret,
-
 		     data,
 		     function (error, data, resp) {
 			 if(error) {

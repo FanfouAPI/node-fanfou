@@ -4,6 +4,7 @@ var express = require('express'),
 
 var apivendor = require('./apivendor.js');
 var settings =  require('./settings.js');
+var spec = require('./public/js/spec.js');
 apivendor.config(settings.oauth_info);
 
 // Setup the Express.js server
@@ -51,7 +52,8 @@ app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
 	api.get(path, {
 		'query': req.query,
 		'success': function (data) {
-		    res.send(data);
+		    var sk = spec.encodeTimeline(path, data);
+		    res.send(sk);
 		},
 		    'error': function (err) {
 			console.info(err.data, {'Content-Type': 'application/json'}, err.statusCode);
@@ -68,9 +70,9 @@ app.post('/proxy/:section/:action', apivendor.require_login, function(req, res) 
 		'success': function (data) {
 		    res.send(data);
 		},
-		    'error': function () {
-			console.error('error', path, arguments);
-		    }
+                'error': function () {
+		    console.error('error', path, arguments);
+		}
 	    });
     });
 

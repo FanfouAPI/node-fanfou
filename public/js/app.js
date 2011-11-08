@@ -3,6 +3,7 @@ var AppRouter = Backbone.Router.extend({
 	routes: {
 	    '!/update': 'update_status',
 	    '!/mentions': 'mentions',
+	    '!/public': 'public',
 	    '!/statuses/:id': 'status_detail',
 	    '!/q/:query': 'search',
 	    '!/:id': "user",
@@ -14,6 +15,10 @@ var AppRouter = Backbone.Router.extend({
 	},
 	search: function (query) {
 	    App.search(query);
+	},
+
+	public: function () {
+	    App.getPublicTimeline();
 	},
 	mentions: function () {
 	    App.getMentions();
@@ -86,10 +91,10 @@ var App = function () {
     };
 
     app._timelineCache = {};
-    app.loadTimelineCache = function () {
+    app.loadTimelineCache = function (key) {
 	var cached_model;
-	if(window.sessionStorage) {
-	    cached_model = sessionStorage.getItem('timeline.' + window.location.hash);
+	if(window.localStorage) {
+	    cached_model = localStorage.getItem('timeline.' + key);
 	    if(cached_model) {
 		cached_model = new Timeline(_.map(JSON.parse(cached_model), 
 						  function (s) {
@@ -97,7 +102,7 @@ var App = function () {
 						  }));
 	    }
 	} else {
-	    cached_model = app._timelineCache[window.location.hash];
+	    cached_model = app._timelineCache[key];
 	}
 	if(cached_model) {
 	    var v = new TimelineView({
@@ -108,93 +113,78 @@ var App = function () {
 	}
     };
 
-    app.storeTimelineCache = function (timeline) {
-	if(window.sessionStorage) {
-	    sessionStorage.setItem('timeline.' + window.location.hash, 
+    app.storeTimelineCache = function (key, timeline) {
+	if(window.localStorage) {
+	    localStorage.setItem('timeline.' + key,
 				   JSON.stringify(_.map(timeline.models, function (m) {
 					       return m.toJSON();
 					   })));
 	} else {
-	    app._timelineCache[window.location.hash] = timeline;
+	    app._timelineCache[key] = timeline;
 	}
     };
 
-    app.getMentions = function () {
-	app.loadTimelineCache();
-	var timeline = new Timeline();
-	timeline.url = '/proxy/statuses/mentions?format=html';
-	timeline.fetch({
-		'success': function (data) {
-		    var v = new TimelineView({
-			    el: app.getContentArea(),
-				collection: data
-			});
-		    v.render();
-		    app.storeTimelineCache(data);
-		}, 'error': function (err, req) {
-		    console.error('get mentions error', err);
-		    app.handleError(err, req);
-		}		    
-	    });
-    };
+    app.getTimeline = function (url, opts) {
+	if(typeof opts == 'function') {
+	    opts = {success: opts};
+	} else if(!opts) {
+	    opts = {};
+	}
 
-    app.getHomeTimeline = function () {
-	app.loadTimelineCache();
+	var cachekey = window.location.hash;
+	app.loadTimelineCache(cachekey);
 	var timeline = new Timeline();
-	timeline.url = '/proxy/statuses/friends_timeline?format=html';
+	timeline.url = url;
 	timeline.fetch({
 		'success': function (data) {
-		    var v = new TimelineView({
-			    el: app.getContentArea(),
-				collection: data
-			});
-		    v.render();
-		    app.storeTimelineCache(data);
-		}, 'error': function (err, req) {
-		    console.error('get timeline error', err, req);
-		    app.handleError(err, req);
-		}		    
-	    });
-    };
-    app.search = function (query) {
-	app.loadTimelineCache();
-	var timeline = new Timeline();
-	timeline.url = '/proxy/search/public_timeline?format=html&q=' + query;
-	timeline.fetch({
-		'success': function (data) {
-		    var v = new TimelineView({
-			    el: app.getContentArea(),
-				collection: data
-			});
-		    v.render();
-		    app.storeTimelineCache(data);
-		}, 'error': function (err, req) {
-		    console.error('get timeline error', err, req);
-		}		    
-	    });
-    };
-    
-    app.getUserTimeline = function (userid) {
-	app.loadTimelineCache();
-	var timeline = new Timeline();
-	timeline.url = '/proxy/statuses/user_timeline?format=html&id=' + userid;
-	timeline.fetch({
-		'success': function (data) {
-		    var v = new TimelineView({
-			    el: app.getContentArea(),
-				collection: data
-			});
-		    v.render();
-		    app.storeTimelineCache(data);
-		}, 'error': function (err, req) {
-		    if(req.status == 403) {
-			app.notify('隐私用户');
+		    if(opts.success) {
+			opts.success(data);
 		    } else {
+			var v = new TimelineView({
+				el: app.getContentArea(),
+				collection: data
+			    });
+			v.render();
+			app.storeTimelineCache(cachekey, data);
+		    } 
+		}, 'error': function (err, req) {
+		    if(opts.error) {
+			opts.error(err, req);
+		    } else {
+			console.error('get timeline error', url, err);
 			app.handleError(err, req);
 		    }
 		}		    
 	    });
+    }
+    app.getMentions = function () {
+	app.getTimeline('/proxy/statuses/mentions?format=html');
     };
+
+    app.getPublicTimeline = function () {
+	app.getTimeline('/proxy/statuses/public_timeline?format=html');
+    };
+
+    app.getHomeTimeline = function () {
+	app.getTimeline('/proxy/statuses/friends_timeline?format=html');
+    };
+
+    app.search = function (query) {
+	app.getTimeline('/proxy/search/public_timeline?format=html&q=' + query);
+    };
+    
+    app.getUserTimeline = function (userid) {
+	app.getTimeline(
+			'/proxy/statuses/user_timeline?format=html&id=' + userid, {
+			    error: function (err, req) {
+				if(req.status == 403) {
+				    app.notify('隐私用户');
+				} else {
+				    app.handleError(err, req);
+				}
+			    }		    
+			});
+    }
 
     app.getStatusPage = function (statusid) {
 	var status = new Status();
@@ -248,7 +238,7 @@ var App = function () {
     };
     
     app.refresh = function () {
-	sessionStorage.clear();
+	localStorage.clear();
     }
 
     return app;

@@ -53,7 +53,8 @@ var TimelineView = Backbone.View.extend({
 		});
 	    var dom = $(html);
 	    $('a.former', $(dom)).each(function () {
-		    var userid = $(this).attr('href').replace('http://fanfou.com/', '');
+		    //var userid = $(this).attr('href').replace('http://fanfou.com/', '');
+		    var userid = $(this).attr('href').replace(/.*\//g, '');
 		    $(this).addClass('user')
 			.attr('href', '#')
 			.attr('rel', userid);

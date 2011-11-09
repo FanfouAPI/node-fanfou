@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html> <!--manifest="app.manifest"> -->
 <html>
   <head>
     <title>Fanfou ABC</title>
@@ -14,89 +16,33 @@
     <script text="text/javascript" src="/js/model.js"></script>
     <script text="text/javascript" src="/js/view.js"></script>
     <script text="text/javascript" src="/js/app.js"></script>
-    <script text="text/javascdript" src="/js/mockupdata.js"></script>
     <script language="javascript">
       //<!--
       $(document).ready(function () {
-         App.initialize();
+          load_template(App.initialize);
       });
       //-->
     </script>
   </head>
   <body>
-    <div id="header">
+    <div id="header" class="clearfix">
       <div id="add" class="clearfix right" onclick="App.gohash('#!/update');">+</div>
-      <div id="loading" class="clearfix right" onclick="App.gohash('#!/update');">...</div>
-      <div id="logo" class="clearfix" onclick="App.gohash('#');"></div>
+      <div id="add" class="clearfix right" onclick="$('#commands').toggle();">M</div>
+      <div id="logo" class="clearfix left" onclick="App.gohash('#');"></div>
+      <div id="loading" class="clearfix left" onclick="App.gohash('#!/update');">...</div>
     </div>
-    <div id="commands" class="hided clearfix">
+    <div id="commands" class="hide commands clearfix">
       <button onclick="App.gohash('#!/public');">随便看看</button>
       <button onclick="App.gohash('#!/mentions');">提到我的</button>
-      <button>退出</button>
+      <button onclick="App.gohash('#!/search');">搜索</button>
       <button onclick="App.refresh();">刷新</button>
+      <button>退出</button>
     </div>
     <div id="wrapper" class="clearfix">
       <div id="content"></div>
     </div>
-
     <div id="footer" class="clearfix">
     </div>
-
-    <script id="panel-template" type="text/template">
-      <div id="logo" class="clearfix"></div>
-      <ul id="navlist">
-	<li><a href="#">首页</a></li>
-	<li><a href="#">个人空间</a></li>
-      </ul>
-    </script>
-
-    <script id="notify-template" type="text/template">
-      <p class="notify">{{{ content }}}</p>
-    </script>
-
-    <script id="status-template" type="text/template">
-      <div id="timeline">
-	<div class="status-row clearfix" rel="{{ id }}">
-	  {{# user }}
-	  <div class="avatar left">
-	    <a href="javascript:App.gotoUserLink('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
-	  </div>
-	  <div class="" style="clear: top;"></div>
-	  <div class="status-content">
-            <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
-	    {{/ user }}
-	    {{{ text }}}
-	  </div>
-	</div>
-      </div>
-    </script>
-
-    <script id="timeline-template" type="text/template">
-      <div id="timeline">
-	{{#timeline }}
-	<div class="status-row clearfix" rel="{{ id }}">
-	  {{# user }}
-	  <div class="avatar left">
-	    <a href="javascript:App.gotoUserLink('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
-	  </div>
-	  <div class="" style="clear: top;"></div>
-	  <div class="status-content">
-            <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
-	    {{/ user }}
-	    {{{ text }}}
-	  </div>
-	</div>
-	{{/timeline }}
-      </div>
-    </script>
-    
-    <script id="update-status-template" type="text/template">
-      <div id="update-status" class="clearfix">
-	<form action="/proxy/statuses/update" method="POST">
-	  <textarea name="status"></textarea>
-	  <input id="exec" class="right" type="submit"></input>
-	</form>
-      </div>
-    </script>
   </body>
 </html>
+

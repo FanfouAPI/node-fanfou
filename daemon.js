@@ -1,7 +1,7 @@
 var express = require('express'),
     OAuth = require('oauth').OAuth,
     querystring = require('querystring');
-
+var fs = require('fs');
 var apivendor = require('./apivendor.js');
 var settings =  require('./settings.js');
 var spec = require('./public/js/spec.js');
@@ -17,20 +17,26 @@ app.use(express.session({
 }));
 //app.use(express.router);
 
-var dashboard_url = '/board';
+var dashboard_url = '/bd1';
 app.get('/', apivendor.require_login, function(req, res){
 	res.redirect(dashboard_url);
     });
+
 app.get(dashboard_url, apivendor.require_login, function(req, res) {
 	res.sendfile(__dirname + '/public/dashboard/index.html');
     });
 app.use(express.static(__dirname + '/public'));
 
+app.get('/app.manifest', function (req, res) {
+	res.header('Content-Type: text/cache-manifest');
+	res.sendfile(__dirname + '/public/app.manifest');
+    });
 // OAuth
 app.get(apivendor.login_url, function(req, res) {
 	var callback_url = 'http://' + req.headers.host + '/api_callback';
 	apivendor.authorize(req, res, callback_url);
     });
+
 app.get('/api_callback', function(req, res) {
 	var api = apivendor.from_request(req);
 	api.get_access_token(function(token, secret) {
@@ -38,6 +44,18 @@ app.get('/api_callback', function(req, res) {
 	    });
     });
 
+app.get('/app_template.js', function(req, res) {
+	fs.readFile(__dirname + '/public/dashboard/template.html', 'utf-8', function (err, data) {
+		if(err) {
+		    // 404
+		}
+		var resp = 'function read_template() {\nvar window.a = ';
+		resp += JSON.stringify(data);
+		//resp += '; $(document.body).append($(a)); };';
+		resp += '; \ndocument.body.innerHTML += window.a';
+		res.send(resp, {'Content-Type': 'text/javascript'});
+	    });
+    });
 app.get('/show_account', apivendor.require_login, function(req, res) {
 	var api = apivendor.from_request(req);
 	api.get('/account/verify_credentials',

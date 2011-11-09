@@ -11,6 +11,23 @@ var NotifyView = Backbone.View.extend({
 	}
     });
 
+var SearchView = Backbone.View.extend({
+	events: {
+	    'click #exec': 'do_search'
+	},
+	do_search: function (evt) {
+	    var v = $(evt.currentTarget).siblings('#id_q').val();
+	    if(v) {
+		App.gohash('#!/q/' + encodeURIComponent(v));
+	    }
+	},
+	initialize: function () {},
+	render: function () {
+	    var html = App.template('#query-template', {});
+	    this.el.html(html);
+	    
+	}
+    });
 var StatusView = Backbone.View.extend({
 	events: {},
 	initialize: function (){},
@@ -35,11 +52,17 @@ var TimelineView = Backbone.View.extend({
 	},
 
 	click_content: function (evt) {
-	    var statusid = $(evt.currentTarget).parents('.status-row').attr('rel');
-	    console.info(statusid);
-	    if(statusid) {
-		App.gohash('#!/statuses/' + statusid);
-	    }
+	    $('#status-commands').remove();
+	    var dock = $(evt.currentTarget).parents('.status-row');
+	    var statusid = dock.attr('rel');
+	    var html = App.template('#status-commands-template', {
+		    statusid: statusid
+		});
+	    var dom = $(html);
+
+	    console.info(dock);
+	    dom.insertAfter(dock);
+	    //dock.append(dom);
 	},
 
 	initialize: function () {},
@@ -75,14 +98,25 @@ var TimelineView = Backbone.View.extend({
 
 var UpdateStatusView = Backbone.View.extend({
 	events: {},
-	initialize: function () {},
+	initialize: function (opts) {
+	    this.text = opts.text || '';
+	    this.repost_status_id = opts.repost_status_id || '';
+	    this.in_reply_to_status_id = opts.in_reply_to_status_id || '';
+	    console.info('xxx', opts);
+	},
+
 	render: function () {
-	    var html = App.template('#update-status-template', {});
+	    var context = {
+		repost_status_id: this.repost_status_id,
+		in_reply_to_status_id: this.in_reply_to_status_id,
+		text: this.text
+	    };
+	    var html = App.template('#update-status-template', context);
 	    this.el.html(html);
+	    console.info(html, context);
 	    $('#update-status form').ajaxForm({
 		    dataType: 'json',
 			success: function (data) {
-			console.info('updated', data);
 			App.gohash('#');
 		    }
 		});

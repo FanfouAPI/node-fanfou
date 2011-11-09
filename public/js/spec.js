@@ -2,7 +2,8 @@
 var timeline_path = {'/statuses/public_timeline': true,
 		     '/statuses/friends_timeline': true,
 		     '/statuses/user_timeline': true,
-		     '/statuses/mentions': true
+		     '/statuses/mentions': true,
+		     '/search/public_timeline': true
 };
 
 var status_fields = ['id', 'text', 'created_at', 'user'];

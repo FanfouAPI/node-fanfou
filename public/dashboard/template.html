@@ -1,0 +1,72 @@
+<script id="panel-template" type="text/template">
+  <div id="logo" class="clearfix"></div>
+  <ul id="navlist">
+    <li><a href="#">首页</a></li>
+    <li><a href="#">个人空间</a></li>
+  </ul>
+</script>
+
+<script id="notify-template" type="text/template">
+  <p class="notify">{{{ content }}}</p>
+</script>
+
+<script id="status-template" type="text/template">
+  <div id="timeline">
+    <div class="status-row clearfix" rel="{{ id }}">
+      {{# user }}
+      <div class="avatar left">
+	<a href="javascript:App.gotoUserLink('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
+      </div>
+      <div class="" style="clear: top;"></div>
+	  <div class="status-content">
+            <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
+	    {{/ user }}
+	    {{{ text }}}
+	  </div>
+    </div>
+  </div>
+</script>
+
+<script id="timeline-template" type="text/template">
+  <div id="timeline">
+    {{#timeline }}
+    <div class="status-row clearfix" rel="{{ id }}">
+      {{# user }}
+      <div class="avatar left">
+	<a href="javascript:App.gotoUserLink('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
+      </div>
+      <div class="" style="clear: top;"></div>
+      <div class="status-content">
+        <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
+	{{/ user }}
+	{{{ text }}}
+      </div>
+    </div>
+     {{/timeline }}
+  </div>
+</script>
+
+<script id="update-status-template" type="text/template">
+  <div id="update-status" class="clearfix">
+    <form action="/proxy/statuses/update" method="POST">
+      <textarea name="status">{{ text }}</textarea>
+      <input type="hidden" name="repost_status_id" value="{{ repost_status_id }}"/>
+      <input type="hidden" name="in_reply_to_status_id" value="{{ in_reply_to_status_id }}"/>
+      <input id="exec" class="right" type="submit"></input>
+    </form>
+  </div>
+</script>
+
+<script id="query-template" type="text/template">
+  <div id="query" class="clearfix">
+    <input id="id_q" name="q"></input><br/>
+    <button id="exec" type="submit">搜索</button>
+  </div>
+</script>
+
+<script id="status-commands-template" type="text/template">
+    <div id="status-commands" class="clearfix commands">
+      <button onclick="App.gohash('#!/repost/{{ statusid }}');">转发</button>
+      <button onclick="App.gohash('#!/reply/{{ statusid }}');">回复</button>
+    </div>
+</script>

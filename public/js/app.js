@@ -2,10 +2,13 @@
 var AppRouter = Backbone.Router.extend({
 	routes: {
 	    '!/update': 'update_status',
+	    '!/reply/:statusid': 'reply',
+	    '!/repost/:statusid': 'repost',
 	    '!/mentions': 'mentions',
-	    '!/public': 'public',
+	    '!/public': 'public_timeline',
 	    '!/statuses/:id': 'status_detail',
 	    '!/q/:query': 'search',
+	    '!/search': 'search_form',
 	    '!/:id': "user",
 	    '': "home"
 	},
@@ -13,16 +16,40 @@ var AppRouter = Backbone.Router.extend({
 	update_status: function () {
 	    App.updateStatus();
 	},
+
+	reply: function (statusid) {
+	    App.getStatus(statusid, function (orig) {
+		    orig = orig.toJSON();
+		    App.updateStatus({
+			    text: '@' + orig.user.name + ' ',
+			    in_reply_to_status_id: statusid
+			});
+		});
+	},
+	repost: function (statusid) {
+	    App.getStatus(statusid, function (orig) {
+		    orig = orig.toJSON();
+		    App.updateStatus({
+			    text: '转@' + orig.user.name + ' ' + orig.text,
+			    repost_status_id: statusid
+			});
+		});
+	},
 	search: function (query) {
 	    App.search(query);
 	},
 
-	public: function () {
+	search_form: function () {
+	    App.search_form();
+	},
+
+	public_timeline: function () {
 	    App.getPublicTimeline();
 	},
 	mentions: function () {
 	    App.getMentions();
 	},
+
 
 	user: function (userid) {
 	    $(document).scrollTop(0);
@@ -151,7 +178,6 @@ var App = function () {
 		    if(opts.error) {
 			opts.error(err, req);
 		    } else {
-			console.error('get timeline error', url, err);
 			app.handleError(err, req);
 		    }
 		}		    
@@ -172,6 +198,13 @@ var App = function () {
     app.search = function (query) {
 	app.getTimeline('/proxy/search/public_timeline?format=html&q=' + query);
     };
+
+    app.search_form = function () {
+	var v = new SearchView({
+		el: app.getContentArea(),
+	    });
+	v.render();
+    }
     
     app.getUserTimeline = function (userid) {
 	app.getTimeline(
@@ -191,7 +224,6 @@ var App = function () {
 	status.url = '/proxy/statuses/show?format=html&id=' + statusid;
 	status.fetch({
 		'success': function (data) {
-		    console.info(data.toJSON());
 		    var view = new StatusView({
 			    el: app.getContentArea(),
 			    model: data,
@@ -209,7 +241,7 @@ var App = function () {
 
     app.handleError = function (err, req) {
 	if(req.status == 410) {
-	    window.location.reload();
+	    window.location = '/';
 	} else if(req.status == 401) {
 	    app.notify('访问错误!');
 	} else {
@@ -225,10 +257,11 @@ var App = function () {
 	v.render();
     };
 
-    app.updateStatus = function () {
-	var v = new UpdateStatusView({
-		el: app.getContentArea()
-	    });
+    app.updateStatus = function (opts) {
+	opts = opts || {};
+	opts.el = app.getContentArea();
+	console.info(opts);
+	var v = new UpdateStatusView(opts);
 	v.render();
     };
 
@@ -238,8 +271,29 @@ var App = function () {
     };
     
     app.refresh = function () {
+	applicationCache.update();
 	localStorage.clear();
-    }
+    };
 
+    app.getStatus = function (id, opts) {
+	if(typeof opts == 'function') {
+	    opts = {success: opts};
+	}
+	opts = opts || {};	
+	var status = new Status();
+	status.url = '/proxy/statuses/show?id=' + id;
+	status.fetch({
+		success: function(st) {
+		    if(opts.success) {
+			opts.success(st);
+		    }
+		},
+		    error: function (err) {
+		    if(opts.error) {
+			opts.error(err);
+		    }
+		}
+	    });
+    };
     return app;
 }();

@@ -5,6 +5,8 @@ var Status = Backbone.Model.extend({
 var User = Backbone.Model.extend({
     });
 
+var Query = Backbone.Model.extend({});
+
 // Collections
 var Timeline = Backbone.Collection.extend({
 	model: Status,
@@ -13,3 +15,12 @@ var Timeline = Backbone.Collection.extend({
 	    return sk;
 	}
     });
+
+var QueryList = Backbone.Collection.extend({
+	model: Query
+    });
+
+var Trends = Backbone.Model.extend({
+    });
+
+

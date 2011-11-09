@@ -22,12 +22,13 @@ var SearchView = Backbone.View.extend({
 	    }
 	},
 	initialize: function () {},
+
 	render: function () {
 	    var html = App.template('#query-template', {});
 	    this.el.html(html);
-	    
 	}
     });
+
 var StatusView = Backbone.View.extend({
 	events: {},
 	initialize: function (){},
@@ -40,8 +41,49 @@ var StatusView = Backbone.View.extend({
 var TimelineView = Backbone.View.extend({
 	events: {
 	    'click a.user': 'click_userlink',
-	    'click .status-content': 'click_content'
+	    'touchstart .status-row': 'touchstart_status',
+	    'touchend .status-row': 'touchend_status',
+	    'mousedown .status-row': 'touchstart_status',
+	    'mouseup .status-row': 'touchend_status'
+
 	},
+	touchend_status: function (evt) {
+	    if(this.touched_row) {
+		var target = $(evt.currentTarget);
+		if(!target.hasClass('status-row')) {
+		    target = target.parents('.status-row');
+		}
+		var statusid = target.attr('rel');
+		if(statusid && statusid == this.touched_row.statusid) {
+		    var pageX = evt.type == 'mouseup'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+		    if(Math.abs(pageX - this.touched_row.pageX) > 80) {
+			this.show_commands(target);
+		    }
+		}
+		this.touched_row = null;
+	    }
+	},
+
+	touchstart_status: function (evt) {
+	    /*var s = '';
+	    var e = evt.originalEvent.changedTouches[0];
+	    for(var k in e) {
+		s += k + ' => ' + e[k] + '\n';
+	    }
+	    rconsole.info(s); */
+	    var target = $(evt.currentTarget);
+	    if(!target.hasClass('status-row')) {
+		target = target.parents('.status-row');
+	    }
+	    if(target.length) {
+		var pageX = evt.type == 'mousedown'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+		this.touched_row = {
+		    'statusid': target.attr('rel'),
+		    'pageX': pageX
+		};
+	    }
+	},
+	
 	click_userlink: function (evt) {
 	    evt.preventDefault();
 	    var userid = $(evt.currentTarget).attr('rel');
@@ -51,21 +93,24 @@ var TimelineView = Backbone.View.extend({
 	    evt.stopPropagation();
 	},
 
-	click_content: function (evt) {
-	    $('#status-commands').remove();
-	    var dock = $(evt.currentTarget).parents('.status-row');
-	    var statusid = dock.attr('rel');
-	    var html = App.template('#status-commands-template', {
-		    statusid: statusid
-		});
-	    var dom = $(html);
-
-	    console.info(dock);
-	    dom.insertAfter(dock);
-	    //dock.append(dom);
+	show_commands: function (dock) {
+	    if($('#status-commands', dock).length) {
+		$('#status-commands').remove();
+	    } else {
+		$('#status-commands').remove();
+		var statusid = dock.attr('rel');
+		var html = App.template('#status-commands-template', {
+			statusid: statusid
+		    });
+		var dom = $(html);
+		//dom.insertAfter(dock);
+		dock.append(dom);
+	    }
 	},
 
-	initialize: function () {},
+	initialize: function () {
+
+	},
 	render: function () {
 	    var timeline = _.map(this.collection.models, function (obj) {
 		    return obj.toJSON();
@@ -121,5 +166,50 @@ var UpdateStatusView = Backbone.View.extend({
 		    }
 		});
 
+	}
+    });
+
+var TrendsView = Backbone.View.extend({
+	events: {},
+	initialize: function (opts) {
+	    this.title = opts.title;
+	},
+	render: function () {
+	    var trends = _.map(this.model.get('trends'), function (q) {
+		    return {
+			'name': q.name,
+			'query': encodeURIComponent(q.query)
+		    }
+		});
+	    if(trends.length) {
+		var html = App.template('#trends-template', {
+			trends: trends,
+			title: this.title
+		    });
+		$(html).insertAfter(this.el);
+	    }
+	}
+    });
+
+var QueryListView = Backbone.View.extend({
+	events: {},
+	initialize: function (opts) {
+	    this.title = opts.title;
+	},
+	render: function () {
+	    var trends = _.map(this.collection.models, function (q) {
+		    q = q.toJSON();
+		    return {
+			'name': q.name,
+			'query': encodeURIComponent(q.query)
+		    }
+		});
+	    if(trends.length) {
+		var html = App.template('#trends-template', {
+			trends: trends,
+			title: this.title
+		    });
+		$(html).insertAfter(this.el);
+	    }
 	}
     });

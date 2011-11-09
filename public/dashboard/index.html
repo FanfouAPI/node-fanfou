@@ -2,8 +2,8 @@
 <html> <!--manifest="app.manifest"> -->
 <html>
   <head>
-    <title>Fanfou ABC</title>
     <meta name="viewport" content="user-scalable=0">
+    <title>ABC</title>
     <link rel="stylesheet" type="text/css" href="/css/application.css"></link>
     <script text="text/javascript" src="/js/jquery-1.7.min.js"></script>
     <script text="text/javascript" src="/js/jquery.form.js"></script>
@@ -35,8 +35,8 @@
       <button onclick="App.gohash('#!/public');">随便看看</button>
       <button onclick="App.gohash('#!/mentions');">提到我的</button>
       <button onclick="App.gohash('#!/search');">搜索</button>
-      <button onclick="App.refresh();">刷新</button>
-      <button>退出</button>
+      <button onclick="App.refresh();">清除缓存</button>
+      <button onclick="App.logout();">退出</button>
     </div>
     <div id="wrapper" class="clearfix">
       <div id="content"></div>

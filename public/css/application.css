@@ -20,7 +20,7 @@ a { text-decoration: none; }
 #header {
 	border-bottom: 1px solid #AAA;
 	background: #EEE;	
-	padding: 6px 0;
+	padding: 8px 0;
 }
 
 .commands {
@@ -84,7 +84,7 @@ a { text-decoration: none; }
 
 #query {
        text-align: center;
-       margin: 10px 20px 2px 20px;
+       margin: 10px 20px 20px 20px;
 }
 
 #query #id_q {
@@ -92,4 +92,13 @@ a { text-decoration: none; }
        height: 30px;
        border: 1px solid #AAA;
 
+}
+
+.query-list {
+	    text-align: center;
+	    padding-bottom: 20px;
+}
+
+.query-list span {
+	    margin: 2px 6px;
 }

@@ -24,6 +24,14 @@ exports.config = function(opts) {
     copy_attr('consumer_secret');    
 };
 
+exports.logout = function (req) {
+    delete req.session.oauth_token ;
+    delete req.session.oauth_token_secret;
+
+    delete req.session.oauth_access_token;
+    delete req.session.oauth_access_token_secret;
+};
+
 exports.require_login = function (req, res, next) {
     if(!req.session.oauth_access_token) {
 	var isajax = (req.headers['x-requested-with'] && 

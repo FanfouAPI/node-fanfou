@@ -1,0 +1,26 @@
+
+body {
+     background: #DDD;
+}
+
+#content {
+	 width: 300px;
+	 margin: 0 auto;
+	 background: white;
+	 padding: 20px 10px;
+	 border: 1px solid #AAA;
+	 border-radius: 8px 8px;
+}
+
+#wording {
+	 min-height: 150px;
+}
+
+#wording strong {
+	 color: red;
+}
+
+#recent-change ul {
+	       list-style: none;
+	       padding-left: 20px;
+}

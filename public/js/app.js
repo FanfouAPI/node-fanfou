@@ -35,6 +35,7 @@ var AppRouter = Backbone.Router.extend({
 			});
 		});
 	},
+
 	search: function (query) {
 	    App.search(query);
 	},
@@ -46,10 +47,10 @@ var AppRouter = Backbone.Router.extend({
 	public_timeline: function () {
 	    App.getPublicTimeline();
 	},
+
 	mentions: function () {
 	    App.getMentions();
 	},
-
 
 	user: function (userid) {
 	    $(document).scrollTop(0);
@@ -114,7 +115,30 @@ var App = function () {
 		$('#loading').hide();
 	    });
 	$('#loading').hide();
-	rconsole.info('app initialized');
+	
+	var header_touch_point = null;
+	function header_touch_end(evt) {
+	    if(header_touch_point) {
+		var pageX = evt.type == 'mouseup'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+		if(Math.abs(pageX - header_touch_point.pageX) > 80) {
+		    $('#commands').toggle();
+		}
+		header_touch_point = null;
+	    }
+	}
+	$(document).delegate('#header', 'touchend', header_touch_end);
+	$(document).delegate('#header', 'mouseup', header_touch_end);
+
+	function header_touch_start(evt) {
+	    var pageX = evt.type == 'mousedown'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+	    header_touch_point = {
+		'pageX': pageX
+	    };
+	}
+	$(document).delegate('#header', 'touchstart', header_touch_start);
+	$(document).delegate('#header', 'mousedown', header_touch_start);
+
+	$.ajaxSetup({cache: false});
     };
 
     app._timelineCache = {};
@@ -204,8 +228,14 @@ var App = function () {
 		el: app.getContentArea(),
 	    });
 	v.render();
-    }
-    
+	app.getSavedSearch();
+    };
+
+    app.logout = function () {
+	localStorage.clear();
+	window.location = '/logout';
+    };
+
     app.getUserTimeline = function (userid) {
 	app.getTimeline(
 			'/proxy/statuses/user_timeline?format=html&id=' + userid, {
@@ -217,7 +247,7 @@ var App = function () {
 				}
 			    }		    
 			});
-    }
+    };
 
     app.getStatusPage = function (statusid) {
 	var status = new Status();
@@ -236,6 +266,64 @@ var App = function () {
 			app.handleError(err, req);
 		    }
 		}		    
+	    });
+    };
+    var cached_trends = null;
+    app.getTrends = function () {
+	if(cached_trends) {
+	    var v = new TrendsView({
+		    el: $('#query'),
+		    title: '饭否热词',
+		    model: cached_trends
+		});
+	    v.render();
+	    return;
+	}
+
+	var trends = new Trends();
+	trends.url = '/proxy/trends/index';
+	trends.fetch({
+		'success': function (data) {
+		    var v = new TrendsView({
+			    el: $('#query'),
+			    title: '饭否热词',
+			    model: data
+			});
+		    v.render();
+		    cached_trends = data;
+		}, 'error': function (err, req) {
+		    app.handleError(err, req);
+		}
+	    });
+    };
+    var cached_saved_search = null;
+    app.getSavedSearch = function () {
+	if(cached_saved_search) {
+	    var v = new QueryListView({
+		    el: $('#query'),
+		    title: '保存搜索',
+		    collection: cached_saved_search
+		});
+	    v.render();
+	    app.getTrends();
+	    return;
+	}
+
+	var trends = new QueryList();
+	trends.url = '/proxy/saved_searches/index';
+	trends.fetch({
+		'success': function (data) {
+		    var v = new QueryListView({
+			    el: $('#query'),
+			    title: '保存搜索',
+			    collection: data
+			});
+		    v.render();
+		    cached_saved_search = data;
+		    app.getTrends();
+		}, 'error': function (err, req) {
+		    app.handleError(err, req);
+		}
 	    });
     };
 

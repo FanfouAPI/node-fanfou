@@ -64,6 +64,15 @@
   </div>
 </script>
 
+<script id="trends-template" type="text/template">
+  <div id="trends" class="query-list">
+    {{ title }}<br/>
+    {{#trends }}
+    <span><a href="#!/q/{{ query }}">{{ name }}</a></span>
+    {{/trends }}
+  </div>
+</script>
+
 <script id="status-commands-template" type="text/template">
     <div id="status-commands" class="clearfix commands">
       <button onclick="App.gohash('#!/repost/{{ statusid }}');">转发</button>

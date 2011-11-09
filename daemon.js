@@ -32,7 +32,18 @@ app.get('/app.manifest', function (req, res) {
 	res.sendfile(__dirname + '/public/app.manifest');
     });
 // OAuth
-app.get(apivendor.login_url, function(req, res) {
+/*app.get(apivendor.login_url, function(req, res) {
+	//var callback_url = 'http://' + req.headers.host + '/api_callback';
+	//apivendor.authorize(req, res, callback_url);
+  });
+*/
+
+app.get('/logout', function (req, res) {
+	apivendor.logout(req);
+	res.redirect('/');
+    });
+
+app.get('/api_authorize', function (req, res) {
 	var callback_url = 'http://' + req.headers.host + '/api_callback';
 	apivendor.authorize(req, res, callback_url);
     });
@@ -65,7 +76,10 @@ app.get('/show_account', apivendor.require_login, function(req, res) {
 });
 
 app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
-	var path = '/' + req.params.section + '/' + req.params.action;
+	var path = '/' + req.params.section + '/' + req.params.action;	
+	if(req.params.action == 'index') {
+	    path = '/' + req.params.section;
+	}
 	var api = apivendor.from_request(req);
 	api.get(path, {
 		'query': req.query,

@@ -31,12 +31,6 @@ app.get('/app.manifest', function (req, res) {
 	res.header('Content-Type: text/cache-manifest');
 	res.sendfile(__dirname + '/public/app.manifest');
     });
-// OAuth
-/*app.get(apivendor.login_url, function(req, res) {
-	//var callback_url = 'http://' + req.headers.host + '/api_callback';
-	//apivendor.authorize(req, res, callback_url);
-  });
-*/
 
 app.get('/logout', function (req, res) {
 	apivendor.logout(req);

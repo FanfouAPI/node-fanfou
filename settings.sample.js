@@ -1,5 +1,5 @@
 exports.oauth_info = {
-    login_url: '/api_login',
+    login_url: '/landing.html',
     api_host: 'http://api.fanfou.com',
     request_token_url: 'http://fanfou.com/oauth/request_token',
     access_token_url: 'http://fanfou.com/oauth/access_token',

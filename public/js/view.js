@@ -147,7 +147,6 @@ var UpdateStatusView = Backbone.View.extend({
 	    this.text = opts.text || '';
 	    this.repost_status_id = opts.repost_status_id || '';
 	    this.in_reply_to_status_id = opts.in_reply_to_status_id || '';
-	    console.info('xxx', opts);
 	},
 
 	render: function () {
@@ -158,14 +157,13 @@ var UpdateStatusView = Backbone.View.extend({
 	    };
 	    var html = App.template('#update-status-template', context);
 	    this.el.html(html);
-	    console.info(html, context);
 	    $('#update-status form').ajaxForm({
 		    dataType: 'json',
 			success: function (data) {
 			App.gohash('#');
 		    }
 		});
-
+	    this.$('textarea').focus();
 	}
     });
 

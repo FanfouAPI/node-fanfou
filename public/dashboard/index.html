@@ -25,9 +25,10 @@
     </script>
   </head>
   <body>
+    <div id="header-wrapper">
     <div id="header" class="clearfix">
-      <div id="add" class="clearfix right" onclick="App.gohash('#!/update');">+</div>
-      <div id="add" class="clearfix right" onclick="$('#commands').toggle();">M</div>
+      <div id="add" class="clearfix right header-button" onclick="App.gohash('#!/update');">+</div>
+      <div id="menu" class="clearfix right header-button" onclick="$('#commands').toggle();">M</div>
       <div id="logo" class="clearfix left" onclick="App.gohash('#');"></div>
       <div id="loading" class="clearfix left" onclick="App.gohash('#!/update');">...</div>
     </div>
@@ -37,6 +38,7 @@
       <button onclick="App.gohash('#!/search');">搜索</button>
       <button onclick="App.refresh();">清除缓存</button>
       <button onclick="App.logout();">退出</button>
+    </div>
     </div>
     <div id="wrapper" class="clearfix">
       <div id="content"></div>

@@ -20,6 +20,10 @@ body, textarea {
 }
 a { text-decoration: none; }
 
+#content {
+	 min-height: 180px;
+}
+
 #header {
 	border-bottom: 1px solid #AAA;
 
@@ -54,6 +58,10 @@ a { text-decoration: none; }
 	  border-radius: 4px;
 }
 
+#status-commands {
+		 text-align: right;
+}
+
 #commands button:hover {
 	  background-color: #AAA;
 }
@@ -72,6 +80,7 @@ a { text-decoration: none; }
      border-radius: 5px 5px;
      font-weight: bold;
      border: 1px solid #AAA;
+     color: #999;
 }
 
 #logo {
@@ -119,4 +128,8 @@ a { text-decoration: none; }
 
 .query-list span {
 	    margin: 2px 6px;
+}
+
+.status-photo {
+	      text-align: center;
 }

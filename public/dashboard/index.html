@@ -36,14 +36,16 @@
       <button onclick="App.gohash('#!/public');">随便看看</button>
       <button onclick="App.gohash('#!/mentions');">提到我的</button>
       <button onclick="App.gohash('#!/search');">搜索</button>
-      <button onclick="App.refresh();">清除缓存</button>
-      <button onclick="App.logout();">退出</button>
     </div>
     </div>
     <div id="wrapper" class="clearfix">
       <div id="content"></div>
     </div>
     <div id="footer" class="clearfix">
+      <div class="commands clearfix">
+	<button onclick="App.refresh();">清除缓存</button>
+	<button onclick="App.logout();">退出</button>
+      </div>      
     </div>
   </body>
 </html>

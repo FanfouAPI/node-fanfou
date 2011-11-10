@@ -34,7 +34,9 @@ var StatusView = Backbone.View.extend({
 	initialize: function (){},
 	render: function() {
 	    var html = App.template('#status-template', this.model.toJSON());
-	    this.el.html(html);
+	    var dom = $(html);
+	    process_status_dom(dom);
+	    this.el.html(dom);
 	}
     });
 
@@ -45,8 +47,8 @@ var TimelineView = Backbone.View.extend({
 	    'touchend .status-row': 'touchend_status',
 	    'mousedown .status-row': 'touchstart_status',
 	    'mouseup .status-row': 'touchend_status'
-
 	},
+
 	touchend_status: function (evt) {
 	    if(this.touched_row) {
 		var target = $(evt.currentTarget);
@@ -65,12 +67,6 @@ var TimelineView = Backbone.View.extend({
 	},
 
 	touchstart_status: function (evt) {
-	    /*var s = '';
-	    var e = evt.originalEvent.changedTouches[0];
-	    for(var k in e) {
-		s += k + ' => ' + e[k] + '\n';
-	    }
-	    rconsole.info(s); */
 	    var target = $(evt.currentTarget);
 	    if(!target.hasClass('status-row')) {
 		target = target.parents('.status-row');
@@ -99,8 +95,20 @@ var TimelineView = Backbone.View.extend({
 	    } else {
 		$('#status-commands').remove();
 		var statusid = dock.attr('rel');
+		
+		var status = null;
+		var created_at = '';
+		for(var i=0; i<this.collection.models.length; i++) {
+		    var obj = this.collection.models[i];
+		    if(obj.get('id') == statusid) {
+			status = obj.toJSON();
+			created_at = parse_date(status.created_at);
+		    }
+		}
+
 		var html = App.template('#status-commands-template', {
-			statusid: statusid
+			statusid: statusid,
+			created_at: created_at
 		    });
 		var dom = $(html);
 		//dom.insertAfter(dock);
@@ -109,8 +117,8 @@ var TimelineView = Backbone.View.extend({
 	},
 
 	initialize: function () {
-
 	},
+	
 	render: function () {
 	    var timeline = _.map(this.collection.models, function (obj) {
 		    return obj.toJSON();
@@ -120,23 +128,7 @@ var TimelineView = Backbone.View.extend({
 		    timeline: timeline
 		});
 	    var dom = $(html);
-	    $('a.former', $(dom)).each(function () {
-		    //var userid = $(this).attr('href').replace('http://fanfou.com/', '');
-		    var userid = $(this).attr('href').replace(/.*\//g, '');
-		    $(this).addClass('user')
-			.attr('href', '#')
-			.attr('rel', userid);
-			/*.attr('href', 
-			      "javascript:App.gotoUserTimeline('" + 
-			      userid + "');"); */
-		});
-	    $('a', $(dom)).each(function () {
-		    var href = $(this).attr('href').replace('http://fanfou.com/', '#!/');
-		    
-		    if(/^\/q\/./.test(href)) {
-			$(this).attr('href', '#!/q/' + encodeURIComponent(href.substr(3)));
-		    }
-		});
+	    process_status_dom(dom);
 	    this.el.html(dom);
 	}
     });

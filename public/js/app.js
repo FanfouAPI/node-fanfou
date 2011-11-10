@@ -256,6 +256,7 @@ var App = function () {
 	status.url = '/proxy/statuses/show?format=html&id=' + statusid;
 	status.fetch({
 		'success': function (data) {
+		    console.info(data.toJSON());
 		    var view = new StatusView({
 			    el: app.getContentArea(),
 			    model: data,

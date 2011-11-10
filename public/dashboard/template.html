@@ -18,12 +18,17 @@
 	<a href="javascript:App.gotoUserLink('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
       </div>
       <div class="" style="clear: top;"></div>
-	  <div class="status-content">
-            <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
-	    {{/ user }}
-	    {{{ text }}}
-	  </div>
+      <div class="status-content clearfix">
+        <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
+	{{/ user }}
+	{{{ text }}}
+      </div>
     </div>
+    {{# photo }}
+    <div class="status-photo">
+      <img src="{{ imageurl }}">
+    </div>
+    {{/ photo }}
   </div>
 </script>
 
@@ -75,7 +80,9 @@
 
 <script id="status-commands-template" type="text/template">
     <div id="status-commands" class="clearfix commands">
+      {{ created_at }}
       <button onclick="App.gohash('#!/repost/{{ statusid }}');">转发</button>
       <button onclick="App.gohash('#!/reply/{{ statusid }}');">回复</button>
+      <button onclick="App.gohash('#!/statuses/{{ statusid }}');">详细</button>
     </div>
 </script>

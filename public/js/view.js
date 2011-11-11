@@ -30,10 +30,24 @@ var SearchView = Backbone.View.extend({
     });
 
 var StatusView = Backbone.View.extend({
-	events: {},
+	events: {
+	    'click a.user': 'click_userlink'
+	},
+
+	click_userlink: function (evt) {
+	    evt.preventDefault();
+	    var userid = $(evt.currentTarget).attr('rel');
+	    if(userid) {
+		App.gotoUserTimeline(userid);
+	    }
+	    evt.stopPropagation();
+	},
+
 	initialize: function (){},
 	render: function() {
-	    var html = App.template('#status-template', this.model.toJSON());
+	    var status = this.model.toJSON();
+	    status.created_at = parse_date(status.created_at);
+	    var html = App.template('#status-template', status);
 	    var dom = $(html);
 	    process_status_dom(dom);
 	    this.el.html(dom);

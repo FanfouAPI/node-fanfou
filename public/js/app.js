@@ -275,6 +275,7 @@ var App = function () {
 		}		    
 	    });
     };
+
     var cached_trends = null;
     app.getTrends = function () {
 	if(cached_trends) {

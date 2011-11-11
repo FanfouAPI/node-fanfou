@@ -23,4 +23,7 @@ var QueryList = Backbone.Collection.extend({
 var Trends = Backbone.Model.extend({
     });
 
+var UserList = Backbone.Collection.extend({
+	model: User
+    });
 

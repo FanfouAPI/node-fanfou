@@ -203,3 +203,150 @@ var QueryListView = Backbone.View.extend({
 	    }
 	}
     });
+
+var UserListView = Backbone.View.extend({
+	events: {
+	    'mousedown #userlist-area': 'drag_start',
+	    'mousemove #userlist-area': 'drag_move',
+	    'mouseup #userlist-area': 'drag_end',
+	    'touchstart  #userlist-area': 'drag_start',
+	    'touchmove #userlist-area': 'drag_move',
+	    'touchend #userlist-area': 'drag_end',
+	    //'mouseup a.user': 'click_user',
+	},
+	click_user: function (evt) {
+	    //evt.preventDefault();
+	    var userid = $(evt.currentTarget).attr('rel');
+	    if(!userid) {
+		userid = $(evt.currentTarget).parents('.user-item').attr('rel');
+	    }
+	    if(userid) {
+		App.gotoUserTimeline(userid);
+	    }
+	    //evt.stopPropagation();
+	},
+	drag_start: function (evt) {
+	    /*var userid = $(evt.target).parents('.user-item').attr('rel');
+	    if(userid) {
+		this.dragging_userid = userid;
+		}*/
+
+	    evt.preventDefault();
+	    var pageX = evt.type == 'mousedown'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+	    this.start_x = pageX;
+	    this.delta_x = 0;
+
+	    this.box = this.$('#user-box');
+	    this.start_left = this.box.offset().left;
+	    this.drag_timer();
+	    evt.stopPropagation();
+	},
+
+	drag_timer: function () {
+	    var v = this;
+	    if(this.start_x) {
+		this.box.animate({'left': (this.start_left + this.delta_x) + 'px'}, 
+				 'fast',
+				 function () {
+				     v.drag_timer();
+					 });
+	    } else {
+		var wwidth = this.el.width();
+		var box_width = this.box.width();
+		var box_center = this.box.offset().left + box_width / 2;
+		var center = (wwidth - box_width) / 2;
+
+		function tocenter(box, center) {
+		    box.animate({'left': center + 'px'}, 'fast');
+		}
+
+		if(this.box.offset().left + box_width >= wwidth) {
+		    if(this.page <= 0) {
+			tocenter(this.box, center);
+		    } else {
+			this.box.animate({'left': wwidth + 'px'}, 'fast',
+					 function () {
+					     v.prev_page();
+					 });
+		    }
+		} else if(this.box.offset().left <= 10) {
+		    if((this.page + 1) * this.pagesize >= this.collection.models.length) {
+			tocenter(this.box, center);
+		    } else {
+			this.box.animate({'left': -box_width + 'px'}, 'fast', 
+					 function() {
+					     v.next_page();
+					 });
+		    }
+		} else {
+		    tocenter(this.box, center);
+		}
+	    }
+	},
+	
+	drag_move: function (evt) {
+	    if(this.start_x) {
+		var pageX = evt.type == 'mousemove'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+		this.delta_x = pageX - this.start_x;
+	    }
+	},
+
+	drag_end: function (evt) {
+	    if(this.start_x) {
+		this.start_x = null;
+		/*if(this.dragging_userid) {
+		    if($(evt.target).attr('id') == 'userlist-area') {
+			App.gotoUserTimeline(this.dragging_userid);
+		    }
+		}
+		this.dragging_userid = null; */
+
+	    }
+	},
+
+	initialize: function () {
+	    this.start_x = null;
+	    this.page = 0;
+	    this.pagesize = 10;
+	    this.fromleft = 0;	    
+	},
+	
+	next_page: function () {
+	    this.page += 1;
+	    this.fromleft = 0;
+	    this.render();
+	},
+
+	prev_page: function () {
+	    this.page -= 1;
+	    this.fromleft = 1;
+	    this.render();
+	},
+
+	render: function () {
+	    var start = this.page * this.pagesize;
+	    var end = start + this.pagesize;
+	    var userlist = _.map(this.collection.models.slice(start, end), function (obj) {
+		    obj = obj.toJSON();
+		    obj.short_name = obj.name.substr(0, 4);
+		    return obj;
+		});
+
+	    var html = App.template('#userlist-template', {
+		    userlist: userlist
+		});
+	    var boxdom = $(html);
+	    if(this.fromleft) {
+		$('#user-box', boxdom).css('left', '-300px');
+	    } else {
+		$('#user-box', boxdom).css('left', this.el.width() + 'px');
+	    }
+	    this.el.html(boxdom);
+	    var box = this.$('#user-box');
+	    var center = (this.el.width() - box.width()) / 2;
+
+	    this.$('#user-box').animate({
+		    'left': center
+			}, 'slow');
+	}
+    });

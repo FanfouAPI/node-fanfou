@@ -21,7 +21,7 @@ body, textarea {
 a { text-decoration: none; }
 
 #content {
-	 min-height: 180px;
+	 min-height: 230px;
 }
 
 #header {
@@ -132,4 +132,33 @@ a { text-decoration: none; }
 
 .status-photo {
 	      text-align: center;
+}
+
+#userlist-area {
+	  margin: 0;
+	  position: relative;
+	  width: 100%;
+	  height: 300px;
+}
+
+#user-box {
+	  position: absolute;
+	  width: 300px;
+	  top: 10px;
+	  text-align: center;
+	  border: 1px solid #999;
+	  padding-bottom: 6px;
+}
+
+#user-box img {
+	  margin: 6px;
+	  border-radius: 3px;
+}
+
+#user-box div.name {
+	  font-size: 12px;
+	  line-height: 12px;
+	  height: 10px;	  
+	  margin: 0;
+	  padding: 0;
 }

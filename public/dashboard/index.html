@@ -2,10 +2,14 @@
 <html> <!--manifest="app.manifest"> -->
 <html>
   <head>
-    <meta name="viewport" content="user-scalable=0">
+    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,minimum-scale=1,user-scalable=no">
     <title>ABC</title>
     <link rel="stylesheet" type="text/css" href="/css/application.css"></link>
     <script text="text/javascript" src="/js/jquery-1.7.min.js"></script>
+    <!-- <script text="text/javascript" src="/js/zepto.min.js"></script> -->
+    <script language="javascript">
+      //jQuery = $;
+    </script>
     <script text="text/javascript" src="/js/jquery.form.js"></script>
     <script text="text/javascript" src="/js/underscore-min.js"></script>
     <script text="text/javascript" src="/js/mustache.min.js"></script>
@@ -28,13 +32,14 @@
     <div id="header-wrapper">
     <div id="header" class="clearfix">
       <div id="add" class="clearfix right header-button" onclick="App.gohash('#!/update');">+</div>
-      <div id="menu" class="clearfix right header-button" onclick="$('#commands').toggle();">M</div>
+<!--      <div id="menu" class="clearfix right header-button" onclick="$('#commands').toggle();">M</div> -->
       <div id="logo" class="clearfix left" onclick="App.gohash('#');"></div>
       <div id="loading" class="clearfix left" onclick="App.gohash('#!/update');">...</div>
     </div>
     <div id="commands" class="hide commands clearfix">
       <button onclick="App.gohash('#!/public');">随便看看</button>
       <button onclick="App.gohash('#!/mentions');">提到我的</button>
+      <button onclick="App.gohash('#!/friends');">我的朋友</button>
       <button onclick="App.gohash('#!/search');">搜索</button>
     </div>
     </div>
@@ -49,4 +54,3 @@
     </div>
   </body>
 </html>
-

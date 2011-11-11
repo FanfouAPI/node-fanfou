@@ -86,3 +86,18 @@
       <button onclick="App.gohash('#!/statuses/{{ statusid }}');">详细</button>
     </div>
 </script>
+
+<script id="userlist-template" type="text/template">
+  <div id="userlist-area" class="clearfix">
+    <div id="user-box" class="clearfix">
+      {{# userlist }}
+      <div class="left clearfix user-item" rel="{{ id }}">
+	<a class="user" onclick="App.gotoUserTimeline('{{ id }}');">
+	  <img src="{{ profile_image_url }}" title="{{ name }}" draggable="true"/>
+	  <div class="name">{{ short_name }}</div>
+	</a>
+      </div>
+      {{/ userlist }}
+    </div>
+  </div>
+</script>

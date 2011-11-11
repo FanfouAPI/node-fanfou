@@ -9,10 +9,14 @@ var AppRouter = Backbone.Router.extend({
 	    '!/statuses/:id': 'status_detail',
 	    '!/q/:query': 'search',
 	    '!/search': 'search_form',
+	    '!/friends': 'friends_list',
 	    '!/:id': "user",
 	    '': "home"
 	},
 
+	friends_list: function () {
+	    App.getFriends();
+	},
 	update_status: function () {
 	    App.updateStatus();
 	},
@@ -386,5 +390,33 @@ var App = function () {
 		}
 	    });
     };
+
+    var cached_friends = null;
+    app.getFriends = function () {
+	if(cached_friends) {
+	    var view = new UserListView({
+		    el: app.getContentArea(),
+		    collection: cached_friends
+		});
+	    view.render();
+	    return;
+	}
+
+	var friends = new UserList();
+	friends.url = '/proxy/users/friends';
+	friends.fetch({
+		success: function (frds) {
+		    var view = new UserListView({
+			    el: app.getContentArea(),
+			    collection: frds
+			});
+		    view.render();
+		    cached_friends = frds;
+		}, error: function (err, req) {
+		    app.handleError(err, req);
+		}
+	    });
+    };
+    
     return app;
 }();

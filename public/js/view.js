@@ -130,15 +130,17 @@ var TimelineView = Backbone.View.extend({
 	    }
 	},
 
-	initialize: function () {
+	initialize: function (opts) {
+	    this.prefix = opts.prefix || '';
 	},
 	
 	render: function () {
 	    var timeline = _.map(this.collection.models, function (obj) {
 		    return obj.toJSON();
 		});
-
+	    
 	    var html = App.template('#timeline-template', {
+		    prefix: this.prefix,
 		    timeline: timeline
 		});
 	    var dom = $(html);

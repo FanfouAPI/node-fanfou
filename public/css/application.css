@@ -1,6 +1,7 @@
 .left { float: left; }
 .right { float: right; }
 .clear { clear: both;}
+.text-center { text-align: center;}
 .clearfix { display: block; }
 .clearfix:after { 
 		content: '\0020';
@@ -14,9 +15,13 @@
 
 ul { list-style: none;}
 body, div { margin: 0; padding: 0; }
+body {
+	 background: #EAEAEA;
+}
 body, textarea {
      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
      font-size: 20px;
+
 }
 a { text-decoration: none; }
 
@@ -107,10 +112,10 @@ a { text-decoration: none; }
 	 width: 30px;
 }
 
-#timeline .status-row { padding: 8px 12px; border-bottom: 1px solid #F2F2F2;}
-#timeline .avatar { width: 54px; height: 50px; margin: 2px 0 0 0;}
+.timeline .status-row { padding: 8px 12px; border-bottom: 1px solid #F2F2F2;}
+.timeline .avatar { width: 54px; height: 50px; margin: 2px 0 0 0;}
 .avatar img { border-radius: 5px 5px; }
-#timeline .status-content { } /* max-width: 900px;}*/
+.timeline .status-content { } /* max-width: 900px;}*/
 
 #update-status {
 	       padding: 6px 20px;

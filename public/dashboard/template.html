@@ -11,7 +11,7 @@
 </script>
 
 <script id="status-template" type="text/template">
-  <div id="timeline">
+  <div class="timeline">
     <div class="status-row clearfix" rel="{{ id }}">
       {{# user }}
       <div class="avatar left">
@@ -24,23 +24,25 @@
 	{{{ text }}}
       </div>
     </div>
-    <div id="status-commands" class="clearfix commands detail">
-      发表于 {{ created_at }}
-      <button onclick="App.gohash('#!/repost/{{ id }}');">转发</button>
-      <button onclick="App.gohash('#!/reply/{{ id }}');">回复</button>
-      <button onclick="App.gohash('#!/statuses/{{ id }}');">详细</button>
-    </div>
-
-    {{# photo }}
-    <div class="status-photo">
-      <img src="{{ largeurl }}">
-    </div>
-    {{/ photo }}
   </div>
+  <div id="status-entry-commands" class="clearfix commands detail">
+    发表于 {{ created_at }}
+    <button onclick="App.gohash('#!/repost/{{ id }}');">转发</button>
+    <button onclick="App.gohash('#!/reply/{{ id }}');">回复</button>
+    <button onclick="App.gohash('#!/statuses/{{ id }}');">详细</button>
+  </div>
+  
+  {{# photo }}
+  <div class="status-photo">
+    <img src="{{ largeurl }}">
+  </div>
+  {{/ photo }}
+  <div id="context"></div>
 </script>
 
 <script id="timeline-template" type="text/template">
-  <div id="timeline">
+  {{# prefix }}{{{ prefix }}}{{/ prefix }}
+  <div id="timeline" class="timeline">
     {{#timeline }}
     <div class="status-row clearfix" rel="{{ id }}">
       {{# user }}

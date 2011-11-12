@@ -187,9 +187,11 @@ var App = function () {
 	} else if(!opts) {
 	    opts = {};
 	}
-
+	var usecache = opts.usecache || true;
 	var cachekey = window.location.hash;
-	app.loadTimelineCache(cachekey);
+	if(usecache) {
+	    app.loadTimelineCache(cachekey);
+	}
 	var timeline = new Timeline();
 	timeline.url = url;
 	timeline.fetch({
@@ -202,7 +204,9 @@ var App = function () {
 				collection: data
 			    });
 			v.render();
-			app.storeTimelineCache(cachekey, data);
+			if(usecache) {
+			    app.storeTimelineCache(cachekey, data);
+			}
 		    } 
 		}, 'error': function (err, req) {
 		    if(opts.error) {
@@ -212,7 +216,8 @@ var App = function () {
 		    }
 		}		    
 	    });
-    }
+    };
+
     app.getMentions = function () {
 	app.getTimeline('/proxy/statuses/mentions?format=html');
     };
@@ -260,12 +265,12 @@ var App = function () {
 	status.url = '/proxy/statuses/show?format=html&id=' + statusid;
 	status.fetch({
 		'success': function (data) {
-		    console.info(data.toJSON());
 		    var view = new StatusView({
 			    el: app.getContentArea(),
 			    model: data,
 			});
 		    view.render();
+		    app.getStatusContext(statusid);
 		}, 'error': function (err, req) {
 		    if(req.status == 403) {
 			app.notify('隐私消息');
@@ -273,6 +278,23 @@ var App = function () {
 			app.handleError(err, req);
 		    }
 		}		    
+	    });
+    };
+
+    app.getStatusContext = function (statusid) {
+	var url = '/proxy/statuses/context_timeline?format=html&id=' + statusid;
+	app.getTimeline(url, {
+		usecache: false,
+		success: function (timeline) {
+		    if(timeline.models.length > 1) {
+			var v = new TimelineView({
+				el: $('#context'),
+				prefix: '<h3 class="text-center">消息上下文</h3>',
+				collection: timeline
+			    });
+			v.render();
+		    }
+		}
 	    });
     };
 

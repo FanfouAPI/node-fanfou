@@ -3,6 +3,7 @@ var timeline_path = {'/statuses/public_timeline': true,
 		     '/statuses/friends_timeline': true,
 		     '/statuses/user_timeline': true,
 		     '/statuses/mentions': true,
+		     '/statuses/context_timeline': true,
 		     '/search/public_timeline': true
 };
 

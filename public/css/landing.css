@@ -1,6 +1,7 @@
 
 body {
      background: #DDD;
+     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 #content {
@@ -21,6 +22,6 @@ body {
 }
 
 #recent-change ul {
-	       list-style: none;
+	       /*	       list-style: none; */
 	       padding-left: 20px;
 }

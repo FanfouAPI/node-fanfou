@@ -24,6 +24,10 @@ var Trends = Backbone.Model.extend({
     });
 
 var UserList = Backbone.Collection.extend({
-	model: User
+	model: User,
+	parse: function (resp, xhr) {
+	    var sk = exports.decodeUserList(resp);
+	    return sk;
+	}
     });
 

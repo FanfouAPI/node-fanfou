@@ -378,7 +378,6 @@ var App = function () {
     app.updateStatus = function (opts) {
 	opts = opts || {};
 	opts.el = app.getContentArea();
-	console.info(opts);
 	var v = new UpdateStatusView(opts);
 	v.render();
     };

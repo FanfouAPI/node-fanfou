@@ -78,7 +78,7 @@ app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
 	api.get(path, {
 		'query': req.query,
 		'success': function (data) {
-		    var sk = spec.encodeTimeline(path, data);
+		    var sk = spec.encodeResult(path, data);
 		    res.send(sk);
 		},
 		    'error': function (err) {

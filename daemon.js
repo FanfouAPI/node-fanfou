@@ -114,3 +114,4 @@ app.get('/rconsole/:level', apivendor.require_login, function (req, res) {
 
 app.listen(settings.daemon_port);
 console.log("listening on http://localhost:" + settings.daemon_port);
+

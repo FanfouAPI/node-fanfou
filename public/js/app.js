@@ -266,7 +266,7 @@ var App = function () {
 
     app.getStatusPage = function (statusid) {
 	var status = new Status();
-	status.url = '/proxy/statuses/show?id=' + statusid;
+	status.url = '/proxy/statuses/show?format=html&id=' + statusid;
 	status.fetch({
 		'success': function (data) {
 		    var view = new StatusView({

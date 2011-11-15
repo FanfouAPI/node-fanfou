@@ -75,6 +75,7 @@ app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
 	    path = '/' + req.params.section;
 	}
 	var api = apivendor.from_request(req);
+	delete req.query['_'];
 	api.get(path, {
 		'query': req.query,
 		'success': function (data) {

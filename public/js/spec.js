@@ -11,7 +11,10 @@ var userlist_path = {'/users/friends': true,
 		     '/users/followers': true
 };
 
-var status_fields = ['id', 'text', 'created_at'];
+var status_fields = ['id', 'text', 'created_at', 
+		     'in_reply_to_status_id',
+		     'repost_status_id',
+		     ['photo', 'largeurl']];
 var user_fields = ['id', 'name', 'screen_name', 'profile_image_url',
 		   'friends_count', 'followers_count', 'statuses_count'];
 for(var i=0; i<user_fields.length; i++) {

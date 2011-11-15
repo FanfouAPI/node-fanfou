@@ -113,19 +113,19 @@ exports.from_request = function (req, callback_url) {
 	}
 	opts = opts || {};
 	var path = module.exports.api_host + url + '.json';
+	var query = [];
 	if(opts.query) {
-	    path += '?';
 	    for(var key in opts.query) {
-		path += key + '=' + opts.query[key] + '&';
+		query.push(key + '=' + opts.query[key]);
 	    }
-	    path += 'k=v';
+	}
+	if(query.length > 0) {
+	    path += '?' + query.join('&');
 	}
 
 	inst.oa.get(path,
 		    req.session.oauth_access_token,
 		    req.session.oauth_access_token_secret,
-		    //req.cookies.oauth_access_token,
-		    //req.cookies.oauth_access_token_secret,
 		    function (error, data, response) {
 			if(error) {
 			    opts.error && opts.error(error, data, response);

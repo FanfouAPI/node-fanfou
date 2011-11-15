@@ -109,6 +109,7 @@ var TimelineView = Backbone.View.extend({
 	    } else {
 		$('#status-commands').remove();
 		var statusid = dock.attr('rel');
+		var repost_status_id = dock.attr('repost');
 		
 		var status = null;
 		var created_at = '';
@@ -122,7 +123,8 @@ var TimelineView = Backbone.View.extend({
 
 		var html = App.template('#status-commands-template', {
 			statusid: statusid,
-			created_at: created_at
+			created_at: created_at,
+			repost_status_id: repost_status_id
 		    });
 		var dom = $(html);
 		//dom.insertAfter(dock);

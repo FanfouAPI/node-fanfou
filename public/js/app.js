@@ -168,6 +168,7 @@ var App = function () {
 		});
 	    v.render();
 	}
+	return cached_model;
     };
 
     app.storeTimelineCache = function (key, timeline) {
@@ -188,9 +189,12 @@ var App = function () {
 	    opts = {};
 	}
 	var usecache = opts.usecache || true;
-	var cachekey = window.location.hash;
+	var cachekey = url;
 	if(usecache) {
-	    app.loadTimelineCache(cachekey);
+	    var cached_model = app.loadTimelineCache(cachekey);
+	    if(cached_model && (opts.cache_once || false)) {
+		return;
+	    }
 	}
 	var timeline = new Timeline();
 	timeline.url = url;
@@ -262,7 +266,7 @@ var App = function () {
 
     app.getStatusPage = function (statusid) {
 	var status = new Status();
-	status.url = '/proxy/statuses/show?format=html&id=' + statusid;
+	status.url = '/proxy/statuses/show?id=' + statusid;
 	status.fetch({
 		'success': function (data) {
 		    var view = new StatusView({
@@ -284,7 +288,8 @@ var App = function () {
     app.getStatusContext = function (statusid) {
 	var url = '/proxy/statuses/context_timeline?format=html&id=' + statusid;
 	app.getTimeline(url, {
-		usecache: false,
+		//usecache: false,
+		cache_once: false,
 		success: function (timeline) {
 		    if(timeline.models.length > 1) {
 			var v = new TimelineView({
@@ -299,6 +304,10 @@ var App = function () {
     };
 
     var cached_trends = null;
+    $(document).bind('cacheRefresh', function () {
+	    console.info('cached trends clear');
+	    cached_trends = null;
+	});
     app.getTrends = function () {
 	if(cached_trends) {
 	    var v = new TrendsView({
@@ -327,6 +336,9 @@ var App = function () {
 	    });
     };
     var cached_saved_search = null;
+    $(document).bind('cacheRefresh', function () {
+	    cached_saved_search = null;
+	});
     app.getSavedSearch = function () {
 	if(cached_saved_search) {
 	    var v = new QueryListView({
@@ -388,8 +400,10 @@ var App = function () {
     };
     
     app.refresh = function () {
-	applicationCache.update();
+	//applicationCache.update();
 	localStorage.clear();
+	console.info('refresh');
+	$(document).trigger('cacheRefresh');
     };
 
     app.getStatus = function (id, opts) {
@@ -414,6 +428,9 @@ var App = function () {
     };
 
     var cached_friends = null;
+    $(document).bind('cacheRefresh', function () {
+	    cached_friends = null;
+	});
     app.getFriends = function () {
 	if(cached_friends) {
 	    var view = new UserListView({

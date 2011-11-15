@@ -44,7 +44,7 @@
   {{# prefix }}{{{ prefix }}}{{/ prefix }}
   <div id="timeline" class="timeline">
     {{#timeline }}
-    <div class="status-row clearfix" rel="{{ id }}">
+    <div class="status-row clearfix" rel="{{ id }}" repost="{{ repost_status_id }}">
       {{# user }}
       <div class="avatar left">
 	<a href="javascript:App.gotoUserTimeline('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
@@ -92,8 +92,14 @@
 <script id="status-commands-template" type="text/template">
     <div id="status-commands" class="clearfix commands">
       {{ created_at }}
+
       <button onclick="App.gohash('#!/repost/{{ statusid }}');">转发</button>
       <button onclick="App.gohash('#!/reply/{{ statusid }}');">回复</button>
+
+      {{# repost_status_id }}
+      <button onclick="App.gohash('#!/statuses/{{ repost_status_id }}');">原帖</button>
+      {{/ repost_status_id }}
+
       <button onclick="App.gohash('#!/statuses/{{ statusid }}');">详细</button>
     </div>
 </script>

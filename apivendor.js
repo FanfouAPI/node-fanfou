@@ -1,4 +1,6 @@
 var OAuth = require('oauth').OAuth;
+var querystring = require('querystring');
+
 exports.login_url = '/fanfou_login';
 exports.api_host = 'http://api.zkff.com';
 //exports.base_url = 'http://zkff.com/oauth/';
@@ -84,18 +86,18 @@ exports.from_request = function (req, callback_url) {
 	    opts = {'success': opts};
 	}
 	opts = opts || {};
-	var path = module.exports.api_host + url + '.json';
-	if(opts.query) {
-	    path += '?';
-	    for(var key in opts.query) {
-		path += key + '=' + opts.query[key] + '&';
-	    }
-	    path += 'k=v';
+	var api_host = opts.api_host || module.exports.api_host;
+	var path = api_host + url + '.json';
+	
+	var qstr = querystring.stringify(opts.query);
+	if(qstr.length > 0) {
+	    path += '?' + qstr;
 	}
 	inst.oa.post(path,
 		     req.session.oauth_access_token,
 		     req.session.oauth_access_token_secret,
 		     data,
+		     opts.post_content_type || 'application/x-www-form-urlencoded',
 		     function (error, data, resp) {
 			 if(error) {
 			     opts.error && opts.error(error, data, resp);
@@ -113,14 +115,9 @@ exports.from_request = function (req, callback_url) {
 	}
 	opts = opts || {};
 	var path = module.exports.api_host + url + '.json';
-	var query = [];
-	if(opts.query) {
-	    for(var key in opts.query) {
-		query.push(key + '=' + opts.query[key]);
-	    }
-	}
-	if(query.length > 0) {
-	    path += '?' + query.join('&');
+	var qstr = querystring.stringify(opts.query);
+	if(qstr.length > 0) {
+	    path += '?' + qstr;
 	}
 
 	inst.oa.get(path,

@@ -380,6 +380,7 @@ $.fn.ajaxSubmit = function(options) {
 				log('cannot access response document: ', ex);
 				e = SERVER_ABORT;
 			}
+
 			if (e === CLIENT_TIMEOUT_ABORT && xhr) {
 				xhr.abort('timeout');
 				return;
@@ -388,7 +389,6 @@ $.fn.ajaxSubmit = function(options) {
 				xhr.abort('server abort');
 				return;
 			}
-
 			if (!doc || doc.location.href == s.iframeSrc) {
 				// response not received yet
 				if (!timedOut)
@@ -401,8 +401,9 @@ $.fn.ajaxSubmit = function(options) {
 				if (timedOut) {
 					throw 'timeout';
 				}
-
+				
 				var isXml = s.dataType == 'xml' || doc.XMLDocument || $.isXMLDoc(doc);
+
 				log('isXml='+isXml);
 				if (!isXml && window.opera && (doc.body == null || doc.body.innerHTML == '')) {
 					if (--domCheckCount) {
@@ -418,6 +419,7 @@ $.fn.ajaxSubmit = function(options) {
 				}
 
 				//log('response detected');
+
                 var docRoot = doc.body ? doc.body : doc.documentElement;
                 xhr.responseText = docRoot ? docRoot.innerHTML : null;
 				xhr.responseXML = doc.XMLDocument ? doc.XMLDocument : doc;
@@ -429,8 +431,9 @@ $.fn.ajaxSubmit = function(options) {
 				};
                 // support for XHR 'status' & 'statusText' emulation :
                 if (docRoot) {
-                    xhr.status = Number( docRoot.getAttribute('status') ) || xhr.status;
+                    xhr.status = Number( docRoot.getAttribute('status') ) || 200; //xhr.status;
                     xhr.statusText = docRoot.getAttribute('statusText') || xhr.statusText;
+
                 }
 
 				var dt = s.dataType || '';

@@ -62,11 +62,12 @@
 
 <script id="update-status-template" type="text/template">
   <div id="update-status" class="clearfix">
-    <form action="/proxy/statuses/update" method="POST">
+    <form action="/statuses/update" method="POST" enctype="multipart/form-data">
       <textarea name="status">{{ text }}</textarea>
-      <input type="hidden" name="repost_status_id" value="{{ repost_status_id }}"/>
-      <input type="hidden" name="in_reply_to_status_id" value="{{ in_reply_to_status_id }}"/>
+<!--      <input type="hidden" name="repost_status_id" value="{{ repost_status_id }}"/>
+      <input type="hidden" name="in_reply_to_status_id" value="{{ in_reply_to_status_id }}"/> -->
       <div class="clearfix commands">
+	<input type="file" name="photo"/>
 	<button>更新</button>
       </div>
     </form>

@@ -169,8 +169,12 @@ var UpdateStatusView = Backbone.View.extend({
 	    this.el.html(html);
 	    $('#update-status form').ajaxForm({
 		    dataType: 'json',
-			success: function (data) {
+		    success: function (data) {
+			console.info(data);
 			App.gohash('#');
+		    },
+			complete: function () {
+			console.info('completed');
 		    }
 		});
 	    this.$('textarea').focus();

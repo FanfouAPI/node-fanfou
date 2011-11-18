@@ -1,4 +1,4 @@
-var querystring = require('querystring');
+//var querystring = require('querystring');
 var fs = require('fs');
 
 exports.compose_multipart = function (fields, files, callback) {
@@ -27,7 +27,8 @@ exports.compose_multipart = function (fields, files, callback) {
     for(var key in fields) {
 	offset += buffer.write('--' + boundary + '\r\n', offset);
 	offset += buffer.write('Content-Disposition: form-data; name="' + key + '"\r\n\r\n', offset);
-	offset += buffer.write(querystring.escape(fields[key]), offset);
+	//offset += buffer.write(querystring.escape(fields[key]), offset);
+	offset += buffer.write(fields[key], offset);
 	offset += buffer.write('\r\n', offset);
     }
 

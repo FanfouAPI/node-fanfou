@@ -152,7 +152,14 @@ var TimelineView = Backbone.View.extend({
     });
 
 var UpdateStatusView = Backbone.View.extend({
-	events: {},
+	events: {
+	    'click #upload_switch': 'toggle_upload'
+	},
+	toggle_upload: function (evt) {
+	    this.$('#upload').toggle();
+	    evt.stopPropagation();
+	    return false;
+	},
 	initialize: function (opts) {
 	    this.text = opts.text || '';
 	    this.repost_status_id = opts.repost_status_id || '';

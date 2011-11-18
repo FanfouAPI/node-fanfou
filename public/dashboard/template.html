@@ -25,6 +25,7 @@
       </div>
     </div>
   </div>
+
   <div id="status-entry-commands" class="clearfix commands detail">
     发表于 {{ created_at }}
     <button onclick="App.gohash('#!/repost/{{ id }}');">转发</button>
@@ -37,6 +38,11 @@
     <img src="{{ largeurl }}">
   </div>
   {{/ photo }}
+  {{# map_image }}
+  <div class="status-photo">
+    <img src="{{ map_image }}">
+  </div>
+  {{/ map_image }}
   <div id="context"></div>
 </script>
 
@@ -66,8 +72,10 @@
       <textarea name="status">{{ text }}</textarea>
       <input type="hidden" name="repost_status_id" value="{{ repost_status_id }}"/>
       <input type="hidden" name="in_reply_to_status_id" value="{{ in_reply_to_status_id }}"/>
+      <input type="hidden" name="location" id="id_location" value=""/>
       <div class="clearfix commands">
 	<button id="upload_switch">上传图片</button>
+	<button id="geo">地理位置</button>
 	<button>更新</button>
       </div>
       <div class="hide" id="upload">

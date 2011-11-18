@@ -44,8 +44,12 @@ var StatusView = Backbone.View.extend({
 	},
 
 	initialize: function (){},
+
 	render: function() {
 	    var status = this.model.toJSON();
+	    if(/^\-?[\d\.]+[,\s]\-?[\d\.]+/.test(status.location)) {
+		status.map_image = 'http://maps.googleapis.com/maps/api/staticmap?center=' + status.location + '&zoom=11&size=200x200&sensor=false';
+	    }
 	    status.created_at = parse_date(status.created_at);
 	    var html = App.template('#status-template', status);
 	    var dom = $(html);
@@ -153,7 +157,28 @@ var TimelineView = Backbone.View.extend({
 
 var UpdateStatusView = Backbone.View.extend({
 	events: {
-	    'click #upload_switch': 'toggle_upload'
+	    'click #upload_switch': 'toggle_upload',
+	    'click #geo': 'geolocation'
+	},
+	geolocation: function (evt) {
+	    var view = this;
+	    if(navigator.geolocation) {
+		function position_got(position) {
+		    var locval = position.coords.latitude + ',' + position.coords.longitude;
+		    view.$('#id_location').val(locval);
+		}
+		function position_error(error) {
+		    alert('无法得到地理位置 ' + error);
+		}
+		if(1) {
+		    navigator.geolocation.getCurrentPosition(
+							     position_got,
+							     position_error,
+{enableHighAccuracy: true});
+		}
+	    }
+	    evt.stopPropagation();
+	    return false;
 	},
 	toggle_upload: function (evt) {
 	    this.$('#upload').toggle();

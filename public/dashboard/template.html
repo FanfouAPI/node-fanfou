@@ -28,7 +28,9 @@
 
   <div id="status-entry-commands" class="clearfix commands detail">
     发表于 {{ created_at }}
-    <button onclick="App.gohash('#!/repost/{{ id }}');">转发</button>
+    {{# repost_status_id }}
+    <button onclick="App.gohash('#!/statuses/{{ repost_status_id }}');">原帖</button>
+    {{/ repost_status_id }}
     <button onclick="App.gohash('#!/reply/{{ id }}');">回复</button>
     <button onclick="App.gohash('#!/statuses/{{ id }}');">详细</button>
   </div>
@@ -87,7 +89,7 @@
 
 <script id="query-template" type="text/template">
   <div id="query" class="clearfix">
-    <input id="id_q" name="q"></input><br/>
+    <input id="id_q" name="q" class="text-input"></input><br/>
     <button id="exec" type="submit">搜索</button>
   </div>
 </script>

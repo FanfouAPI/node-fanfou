@@ -37,3 +37,30 @@ exports.compose_multipart = function (fields, files, callback) {
     var data = buffer.toString('binary', 0, offset);
     callback(boundary, data);
 }
+
+function get_last_modified() {
+    var lm = 0;
+    for(var i=0; i<arguments.length; i++) {
+	var f = arguments[i];
+	var stat = fs.statSync(f);
+	var m;
+	if(stat.isDirectory()) {
+	    var dirlist = fs.readdirSync(f);
+	    for(var j=0; j<dirlist.length; j++) {
+		var de = dirlist[j];
+		m = get_last_modified(f + '/' + de);
+		if(m > lm) {
+		    lm = m;
+		}
+	    }
+	} else {
+	    //console.info('checking', f);
+	    m = new Date(stat.mtime).getTime() / 1000;
+	    if(m > lm) {
+		lm = m;
+	    }
+	}
+    }
+    return lm;
+}
+exports.get_last_modified = get_last_modified;

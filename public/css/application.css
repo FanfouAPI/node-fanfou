@@ -18,7 +18,8 @@ body, div { margin: 0; padding: 0; }
 body {
 	 background: #EAEAEA;
 }
-body, textarea {
+body, textarea,
+input.text-input {
      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
      font-size: 20px;
 

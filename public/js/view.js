@@ -13,7 +13,13 @@ var NotifyView = Backbone.View.extend({
 
 var SearchView = Backbone.View.extend({
 	events: {
-	    'click #exec': 'do_search'
+	    'click #exec': 'do_search',
+	    'keydown #id_q': 'do_keydown'
+	},
+	do_keydown: function (evt) {
+	    if(evt.keyCode == 13) {
+		this.$('#exec').focus().click();
+	    }
 	},
 	do_search: function (evt) {
 	    var v = $(evt.currentTarget).siblings('#id_q').val();
@@ -47,9 +53,13 @@ var StatusView = Backbone.View.extend({
 
 	render: function() {
 	    var status = this.model.toJSON();
-	    if(/^\-?[\d\.]+[,\s]\-?[\d\.]+/.test(status.location)) {
-		status.map_image = 'http://maps.googleapis.com/maps/api/staticmap?center=' + status.location + '&zoom=11&size=200x200&sensor=false';
+	    var re = /^(\-?[\d\.]+)[,\s](\-?[\d\.]+)/.exec(status.location);
+	    if(re) {
+		var loc = re[1] + ',' + re[2];
+		status.map_image = ('http://maps.googleapis.com/maps/api/staticmap?center=' + 
+				    loc + '&zoom=13&size=200x200&sensor=false');
 	    }
+
 	    status.created_at = parse_date(status.created_at);
 	    var html = App.template('#status-template', status);
 	    var dom = $(html);
@@ -160,21 +170,29 @@ var UpdateStatusView = Backbone.View.extend({
 	    'click #upload_switch': 'toggle_upload',
 	    'click #geo': 'geolocation'
 	},
+
 	geolocation: function (evt) {
 	    var view = this;
+	    var button = $(evt.currentTarget); //this.$('#geo');
 	    if(navigator.geolocation) {
 		function position_got(position) {
-		    var locval = position.coords.latitude + ',' + position.coords.longitude;
+		    var locval = (position.coords.latitude + ',' + 
+				  position.coords.longitude);
 		    view.$('#id_location').val(locval);
+		    button.addClass('geo-got').html('取消位置');
 		}
 		function position_error(error) {
 		    alert('无法得到地理位置 ' + error);
 		}
-		if(1) {
+		var geo_got = button.hasClass('geo-got');
+		if(!geo_got) {
 		    navigator.geolocation.getCurrentPosition(
 							     position_got,
 							     position_error,
 {enableHighAccuracy: true});
+		} else {
+		    button.removeClass('geo-got').html('地理位置');
+		    view.$('#id_location').val('');
 		}
 	    }
 	    evt.stopPropagation();

@@ -2,13 +2,16 @@ var express = require('express');
 var OAuth = require('oauth').OAuth;
 var formidable = require('formidable');
 
-
 var fs = require('fs');
 var apivendor = require('./apivendor.js');
 var settings =  require('./settings.js');
 var spec = require('./public/js/spec.js');
 var helper = require('./helper.js');
 apivendor.config(settings.oauth_info);
+
+files = ['public', 'apivendor.js',
+	 'daemon.js', 'helper.js',
+	 'settings.js'];
 
 // Setup the Express.js server
 var app = express.createServer();
@@ -21,12 +24,22 @@ app.use(express.session({
 	    secret: "skjghskdjfhbqigohqdioukd"
 		}));
 
-var dashboard_url = '/bd1';
+var version = helper.get_last_modified.apply({}, files);
+var dashboard_url = '/v/' + version;
+
 app.get('/', apivendor.require_login, function(req, res){
 	res.redirect(dashboard_url);
     });
 
-app.get(dashboard_url, apivendor.require_login, function(req, res) {
+function to_version(req, res, next) {
+    if(req.params.version != '' + version) {
+	res.redirect(dashboard_url);
+    } else {
+	next();
+    }
+}
+
+app.get('/v/:version', to_version, apivendor.require_login, function(req, res) {
 	res.sendfile(__dirname + '/public/dashboard/index.html');
     });
 app.use(express.static(__dirname + '/public'));
@@ -137,8 +150,11 @@ app.post('/proxy/:section/:action', apivendor.require_login, function(req, res) 
 		'success': function (data) {
 		    res.send(data);
 		},
-		    'error': function (err) {
-			res.send(err.data, {'Content-Type': 'application/json'}, err.statusCode);
+		    'error': function (err, data, resp) {
+			res.send(err.data, 
+				 //{'Content-Type': 'application/json'}, 
+				 {'Content-Type': resp.headers['content-type'] || 'application/json'},
+				 err.statusCode);
 		    }
 	    });
     });

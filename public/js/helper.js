@@ -71,3 +71,14 @@ function parse_date(reprdate) {
 	return tendigit(date.getHours()) + ':' + tendigit(date.getMinutes());
     }
 }
+
+function check_version() {
+    var t = /^\/v\/(\d+)/.exec(window.location.pathname);
+    if(t) {
+	var ver = t[1];
+	var curr_ver = localStorage.getItem('version');
+	if(ver != curr_ver) {
+	    localStorage.setItem('version', ver);
+	}
+    }
+}

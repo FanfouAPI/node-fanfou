@@ -110,7 +110,6 @@ var App = function () {
 		}
 		$('#loading').html(text);
 	    }, 100);
-
     
 	$(document).bind('ajaxSend', function (evt, req, settings) {
 		$('#loading').show();
@@ -145,6 +144,8 @@ var App = function () {
 	$(document).delegate('#header-wrapper', 'mousedown', header_touch_start);
 
 	$.ajaxSetup({cache: false});
+
+	check_version();
     };
 
     app._timelineCache = {};

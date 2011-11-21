@@ -127,7 +127,14 @@ exports.from_request = function (req, callback_url) {
 			if(error) {
 			    opts.error && opts.error(error, data, response);
 			} else {
-			    data = JSON.parse(data);
+			    try {
+				data = JSON.parse(data);
+			    } catch(e) {
+				console.error(e, data, response);
+				e.statusCode = 500; //response.statusCode;
+				opts.error && opts.error(e, data, response);
+				return;
+			    }
 			    opts.success && opts.success(data, response);
 			}
 		    });

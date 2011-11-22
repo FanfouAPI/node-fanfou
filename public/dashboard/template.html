@@ -28,11 +28,11 @@
 
   <div id="status-entry-commands" class="clearfix commands detail">
     发表于 {{ created_at }}
+    <button onclick="App.gohash('#!/repost/{{ id }}');">转发</button>
+    <button onclick="App.gohash('#!/reply/{{ id }}');">回复</button>
     {{# repost_status_id }}
     <button onclick="App.gohash('#!/statuses/{{ repost_status_id }}');">原帖</button>
     {{/ repost_status_id }}
-    <button onclick="App.gohash('#!/reply/{{ id }}');">回复</button>
-    <button onclick="App.gohash('#!/statuses/{{ id }}');">详细</button>
   </div>
   
   {{# photo }}

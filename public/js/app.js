@@ -146,6 +146,15 @@ var App = function () {
 	$.ajaxSetup({cache: false});
 
 	check_version();
+	
+	$(document).delegate('#notify-area', 'click', function (evt) {
+		$('#notify-area').hide();
+	    });
+
+	app.fetchNotification();
+	setInterval(function () {
+		app.fetchNotification(); 
+	    }, 30 * 1000);
     };
 
     app._timelineCache = {};
@@ -285,6 +294,17 @@ var App = function () {
 		}		    
 	    });
     };
+
+    app.fetchNotification = function () {
+	var url = '/proxy/account/notification';
+	$.ajax(url, {
+		'success': function(data) {
+		    if(data.mentions > 0) {
+			app.notifyTitle('<a href="javascript:App.gohash(\'#!/mentions\');">有新提示消息</a>');
+		    }
+		}
+	    });
+    }
 
     app.getStatusContext = function (statusid) {
 	var url = '/proxy/statuses/context_timeline?format=html&id=' + statusid;
@@ -457,6 +477,9 @@ var App = function () {
 		}
 	    });
     };
-    
+
+    app.notifyTitle = function (w) {
+	$('#notify-area').html(w).show();
+    };
     return app;
 }();

@@ -203,6 +203,7 @@ var UpdateStatusView = Backbone.View.extend({
 	    evt.stopPropagation();
 	    return false;
 	},
+
 	initialize: function (opts) {
 	    this.text = opts.text || '';
 	    this.repost_status_id = opts.repost_status_id || '';
@@ -227,7 +228,7 @@ var UpdateStatusView = Backbone.View.extend({
 			console.info('completed');
 		    }
 		});
-	    this.$('textarea').focus();
+	    this.$('textarea').focus().click();
 	}
     });
 

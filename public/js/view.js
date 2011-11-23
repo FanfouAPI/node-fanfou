@@ -221,7 +221,6 @@ var UpdateStatusView = Backbone.View.extend({
 	    $('#update-status form').ajaxForm({
 		    dataType: 'json',
 		    success: function (data) {
-			console.info(data);
 			App.gohash('#');
 		    },
 			complete: function () {
@@ -421,5 +420,166 @@ var UserListView = Backbone.View.extend({
 	    this.$('#user-box').animate({
 		    'left': center
 			}, 'slow');
+	}
+    });
+
+var DMConvListView = Backbone.View.extend({
+	events: {
+	    //'click .dm-row': 'click_dm',
+	    'touchstart .dm-row': 'touchstart_dm',
+	    'touchend .dm-row': 'touchend_dm',
+	    'mousedown .dm-row': 'touchstart_dm',
+	    'mouseup .dm-row': 'touchend_dm'
+	},
+	initialize: function() {
+	},
+
+	click_dm: function (evt) {
+	    
+	},
+	touchend_dm: function (evt) {
+	    if(this.touched_row) {
+		var target = $(evt.currentTarget);
+		if(!target.hasClass('dm-row')) {
+		    target = target.parents('.dm-row');
+		}
+		var dmid = target.attr('rel');
+		if(dmid && dmid == this.touched_row.dmid) {
+		    var pageX = evt.type == 'mouseup'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+		    if(Math.abs(pageX - this.touched_row.pageX) > 80) {
+			this.to_conversation(target);
+		    }
+		}
+		this.touched_row = null;
+	    }
+	},
+
+	touchstart_dm: function (evt) {
+	    var target = $(evt.currentTarget);
+	    if(!target.hasClass('dm-row')) {
+		target = target.parents('.dm-row');
+	    }
+	    if(target.length) {
+		var pageX = evt.type == 'mousedown'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+		this.touched_row = {
+		    'dmid': target.attr('rel'),
+		    'pageX': pageX
+		};
+	    }
+	},
+
+	to_conversation: function (dock) {
+	    var peerid = dock.attr('rel');
+	    if(peerid) {
+		App.gohash('#!/dm/' + encodeURIComponent(peerid));
+	    }
+	},
+
+	render: function () {
+	    var dmlist = _.map(this.collection.models, function (obj) {
+		    var msg = obj.toJSON();
+		    var is_sender = msg.dm.recipient.id == msg.otherid;
+		    msg.peer = (is_sender?
+				msg.dm.recipient:
+				msg.dm.sender);
+		    msg.peer.sender_class = is_sender? 'sender': '';
+		    return msg;
+		});
+	    var html = App.template('#dmconv-list-template', {
+		    dmlist: dmlist
+			});
+	    this.el.html(html);
+	}
+    });
+
+var DMConversationView = Backbone.View.extend({
+	events: {
+	    'click .dm-send img': 'click_dm',
+	    'touchstart .dm-row': 'touchstart_dm',
+	    'touchend .dm-row': 'touchend_dm',
+	    'mousedown .dm-row': 'touchstart_dm',
+	    'mouseup .dm-row': 'touchend_dm'
+	},
+	initialize: function(opts) {
+	    this.user = opts.user;
+	},
+
+	click_dm: function (evt) {
+	    $(evt.currentTarget).parents('form').submit();
+	},
+
+	touchend_dm: function (evt) {
+	    if(this.touched_row) {
+		var target = $(evt.currentTarget);
+		if(!target.hasClass('dm-row')) {
+		    target = target.parents('.dm-row');
+		}
+		var dmid = target.attr('rel');
+		if(dmid && dmid == this.touched_row.dmid) {
+		    var pageX = evt.type == 'mouseup'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+		    if(Math.abs(pageX - this.touched_row.pageX) > 80) {
+			this.show_commands(target);
+		    }
+		}
+		this.touched_row = null;
+	    }
+	},
+
+	touchstart_dm: function (evt) {
+	    var target = $(evt.currentTarget);
+	    if(!target.hasClass('dm-row')) {
+		target = target.parents('.dm-row');
+	    }
+	    if(target.length) {
+		var pageX = evt.type == 'mousedown'?evt.pageX:evt.originalEvent.changedTouches[0].pageX;
+		this.touched_row = {
+		    'dmid': target.attr('rel'),
+		    'pageX': pageX
+		};
+	    }
+	},
+
+	show_commands: function (dock) {
+	    if($('#dm-commands', dock).length) {
+		$('#dm-commands').remove();
+	    } else {
+		$('#dm-commands').remove();
+		var peerid = dock.attr('rel');
+		var html = App.template('#dm-commands-template', {
+			peerid: encodeURIComponent(peerid)
+		    });
+		var dom = $(html);
+		//dom.insertAfter(dock);
+		dock.append(dom);
+	    }
+	},
+
+
+	render: function () {
+	    var dmlist = _.map(this.collection.models, function (obj) {
+		    var msg = obj.toJSON();
+		    msg.sender.avatar_align = (msg.sender.id == App.loginuser.get('id')?
+					       'avatar-right': 'avatar-left');
+		    return msg;
+		});
+	    var html = App.template('#dm-conversation-template', {
+		    dmlist: dmlist,
+		    user: this.user,
+		    loginuser: App.loginuser.toJSON()
+			});
+	    this.el.html(html);
+	    this.$('.dm-send form').ajaxForm({
+		    dataType: 'json',
+		    success: function (data) {
+			App.gohash(window.location.hash);
+		    },
+			error: function (err, req) {
+			App.handleError(err, req);
+		    },
+			complete: function () {
+			console.info('completed');
+		    }
+		});
+
 	}
     });

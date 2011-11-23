@@ -10,70 +10,122 @@ var AppRouter = Backbone.Router.extend({
 	    '!/q/:query': 'search',
 	    '!/search': 'search_form',
 	    '!/friends': 'friends_list',
+	    '!/dm/:peerid': 'direct_message_conversation',
+	    '!/dm': 'direct_messages',
 	    '!/:id': "user",
 	    '': "home"
 	},
-
+	
 	friends_list: function () {
-	    App.getFriends();
+	    App.ready(function (app) {
+		    app.getFriends();
+		});
 	},
+
 	update_status: function () {
-	    App.updateStatus();
+	    App.ready(function (app) {
+		    app.updateStatus();
+		});
 	},
 
 	reply: function (statusid) {
-	    App.getStatus(statusid, function (orig) {
-		    orig = orig.toJSON();
-		    App.updateStatus({
-			    text: '@' + orig.user.name + ' ',
-			    in_reply_to_status_id: statusid
+	    App.ready(function (app) {
+		    app.getStatus(statusid, function (orig) {
+			    orig = orig.toJSON();
+			    app.updateStatus({
+				    text: '@' + orig.user.name + ' ',
+					in_reply_to_status_id: statusid
+					});
 			});
 		});
 	},
 	repost: function (statusid) {
-	    App.getStatus(statusid, function (orig) {
-		    orig = orig.toJSON();
-		    App.updateStatus({
-			    text: '转@' + orig.user.name + ' ' + orig.text,
-			    repost_status_id: statusid
+	    App.ready(function (app) {
+		    app.getStatus(statusid, function (orig) {
+			    orig = orig.toJSON();
+			    app.updateStatus({
+				    text: '转@' + orig.user.name + ' ' + orig.text,
+					repost_status_id: statusid
+					});
 			});
 		});
 	},
 
 	search: function (query) {
-	    App.search(query);
+	    App.ready(function (app) {
+		    app.search(query);
+		});
 	},
 
 	search_form: function () {
-	    App.search_form();
+	    App.ready(function (app) {
+		    app.search_form();
+		});
 	},
 
 	public_timeline: function () {
-	    App.getPublicTimeline();
+	    App.ready(function (app) {
+		    app.getPublicTimeline();
+		});
 	},
 
 	mentions: function () {
-	    App.getMentions();
+	    App.ready(function (app) {
+		    app.getMentions();
+		});
 	},
 
 	user: function (userid) {
-	    $(document).scrollTop(0);
-	    App.getUserTimeline(userid);
+	    App.ready(function (app) {
+		    $(document).scrollTop(0);
+		    app.getUserTimeline(userid);
+		});
 	},
 
 	home: function () {
-	    $(document).scrollTop(0);
-	    App.getHomeTimeline();
+	    App.ready(function (app) {
+		    $(document).scrollTop(0);
+		    app.getHomeTimeline();
+		});
 	},
 
+
 	status_detail: function (id) {
-	    App.getStatusPage(id);
+	    App.ready(function (app) {
+		    $(document).scrollTop(0);
+		    app.getStatusPage(id);
+		});
+	},
+	direct_message_conversation: function (peerid) {
+	    App.ready(function (app) {
+		    $(document).scrollTop(0);
+		    app.getDMConversation(peerid);
+		});
+	},
+	direct_messages: function () {
+	    App.ready(function (app) {
+		    $(document).scrollTop(0);
+		    app.getDMConvList();
+		});
 	}
     });
 
 var App = function () {
     var app_router;
     var app = new Object();
+
+    app.loginuser = null;
+    
+    app.ready = function(fn) {
+        if(app.loginuser) {
+            fn(app);
+        } else {
+            $(document).bind('metadata.ready', 
+			     function () {
+				 fn(app);
+			     });
+        }
+    };
 
     app.template = function (temp_selector, data) {
         return Mustache.to_html($(temp_selector).html(),
@@ -99,6 +151,7 @@ var App = function () {
     app.initialize = function() {
         app_router = new AppRouter();
         Backbone.history.start();
+	
 	setInterval(function () {
 		var text = $('#loading').html();
 		if(text.length >= 3) {
@@ -155,8 +208,12 @@ var App = function () {
 	setInterval(function () {
 		app.fetchNotification(); 
 	    }, 30 * 1000);
-    };
 
+	app.getUser(null, function (u) {
+		app.loginuser = u;
+		$(document).trigger('metadata.ready');
+	    });
+    };
     app._timelineCache = {};
     app.loadTimelineCache = function (key) {
 	var cached_model;
@@ -260,6 +317,35 @@ var App = function () {
 	localStorage.clear();
 	window.location = '/logout';
     };
+    
+    app.getUser = function (userid, opts) {
+        if(!userid) {
+            userid = '*';
+        }
+	if(typeof opts == 'function') {
+	    opts = {'success': opts};
+	}
+	opts = opts || {}
+        var url = '/proxy/users/show' + ((userid != '*')?
+                                         ('?id=' + userid): '');
+	var user = new User();
+	user.url = url;
+	user.fetch({
+		'success': function (u) {
+		    if(opts.success) {
+			opts.success(u);
+		    }
+		},
+		    'error': function (err, req) {
+			if(opts.error) {
+			    opts.error(err, req);
+			} else {
+			    app.handleError(err, req);
+			}
+		    }
+	    });
+        return;
+    };
 
     app.getUserTimeline = function (userid) {
 	app.getTimeline(
@@ -299,8 +385,16 @@ var App = function () {
 	var url = '/proxy/account/notification';
 	$.ajax(url, {
 		'success': function(data) {
+		    console.info(data);
+		    var s = '';
+		    if(data.direct_messages > 0) {
+			s += ' <a href="javascript:App.gohash(\'#!/dm\');">有新的私信</a>';
+		    } 
 		    if(data.mentions > 0) {
-			app.notifyTitle('<a href="javascript:App.gohash(\'#!/mentions\');">有新提示消息</a>');
+			s += ' <a href="javascript:App.gohash(\'#!/mentions\');">有新提示消息</a>';
+		    }
+		    if(s) {
+			app.notifyTitle(s);
 		    }
 		}
 	    });
@@ -395,6 +489,8 @@ var App = function () {
 	    window.location = '/';
 	} else if(req.status == 401) {
 	    app.notify('访问错误!');
+	} else if(req.status == 403) {
+	    app.notify('无权限');
 	} else {
 	    console.error(err, req);
 	}
@@ -476,6 +572,42 @@ var App = function () {
 		    app.handleError(err, req);
 		}
 	    });
+    };
+    
+    app.getDMConvList = function () {
+	var dmlist = new DMList();
+	dmlist.url = '/proxy/direct_messages/conversation_list?mode=lite';
+	dmlist.fetch({
+		'success': function (dms) {
+		    console.info(dms.toJSON());
+		    var view = new DMConvListView({
+			    el: app.getContentArea(),
+			    collection: dms
+			});
+		    view.render();
+		},
+		    'error': function (err, req) {
+			app.handleError(err, req);
+		    }
+	    });	
+    };
+
+    app.getDMConversation = function (peerid) {
+	var dmlist = new DMList();
+	dmlist.url = '/proxy/direct_messages/conversation?mode=lite&id=' + peerid;
+	dmlist.fetch({
+		'success': function (dms) {
+		    var view = new DMConversationView({
+			    el: app.getContentArea(),
+			    collection: dms,
+			    user: peerid
+			});
+		    view.render();
+		},
+		    'error': function (err, req) {
+			app.handleError(err, req);
+		    }
+	    });	
     };
 
     app.notifyTitle = function (w) {

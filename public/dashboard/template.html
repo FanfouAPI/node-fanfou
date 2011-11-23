@@ -132,3 +132,60 @@
     </div>
   </div>
 </script>
+
+<script id="dmconv-list-template" type="text/template">
+  <div id="dm-convlist" class="clearfix">
+    {{# dmlist }}
+    {{# peer }}
+    <div class="clearfix dm-row {{ sender_class }}" rel="{{ id }}">
+      <div class="avatar left">
+	<a href="javascript:App.gotoUserTimeline('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
+      </div>
+      <a href="javascript:App.gotoUserTimeline('{{ id }}');">{{ name }}</a>
+    {{/ peer }}
+    {{# dm }}
+     {{{ text }}}
+    {{/ dm }}
+    </div>    
+    {{/ dmlist }}
+  </div>
+</script>
+
+<script id="dm-conversation-template" type="text/template">
+  <div id="dm-convlist" class="clearfix">
+    <div class="clearfix dm-row dm-send avatar-right">
+      <form action="/proxy/direct_messages/new" method="POST">
+	{{# loginuser }}
+	<div class="avatar">
+	  <img src="{{ profile_image_url }}"></img>
+	</div>
+	{{/ loginuser }}
+	<input type="hidden" name="user" value="{{ user }}"/>
+	<textarea name="text"></textarea>
+      </form>
+    </div>
+
+    {{# dmlist }}
+    {{# sender }}
+    <div class="clearfix dm-row {{ avatar_align }}" rel="{{ id }}">
+      <div class="avatar">
+	<a href="javascript:App.gotoUserTimeline('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
+      </div>
+    {{/ sender }}
+      <div class="cnt">{{{ text }}}</div>
+    </div>    
+    {{/ dmlist }}
+  </div>
+</script>
+
+<script id="dm-convlist-commands-template" type="text/template">
+  <div id="dm-convlist-commands" class="clearfix commands">
+    <button onclick="App.gohash('#!/dm/{{ peerid }}');">看看</button>
+  </div>
+</script>
+
+<script id="dm-commands-template" type="text/template">
+  <div id="dm-commands" class="clearfix commands">
+    <button onclick="">删除</button>
+  </div>
+</script>

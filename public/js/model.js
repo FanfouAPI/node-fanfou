@@ -7,6 +7,8 @@ var User = Backbone.Model.extend({
 
 var Query = Backbone.Model.extend({});
 
+var DirectMessage = Backbone.Model.extend({});
+
 // Collections
 var Timeline = Backbone.Collection.extend({
 	model: Status,
@@ -31,3 +33,6 @@ var UserList = Backbone.Collection.extend({
 	}
     });
 
+var DMList = Backbone.Collection.extend({
+	model: DirectMessage
+    });

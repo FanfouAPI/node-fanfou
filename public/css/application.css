@@ -185,3 +185,16 @@ a { text-decoration: none; }
 	  margin: 0;
 	  padding: 0;
 }
+
+#dm-convlist .dm-row { padding: 8px 12px; border-bottom: 1px solid #F2F2F2;}
+#dm-convlist .dm-row.sender { background: #E0E0E0; }
+#dm-convlist .avatar { width: 54px; height: 50px; margin: 2px 0 0 0;}
+#dm-convlist .status-content { } /* max-width: 900px;}*/
+
+#dm-convlist .dm-row.avatar-left .avatar { float: left;}
+#dm-convlist .dm-row.avatar-right .avatar { float: right; margin-left: 6px;}
+#dm-convlist .cnt { max-width: 300px; border: 1px solid #999; padding: 10px;}
+#dm-convlist textarea { width: 300px; height: 40; border: 1px solid #999; padding: 3px; float: right;}
+#dm-convlist .dm-row.avatar-left .cnt { float: left;  background: lightyellow;}
+#dm-convlist .dm-row.avatar-right .cnt { float: right; background: lightblue;}
+

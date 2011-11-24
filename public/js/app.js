@@ -164,11 +164,17 @@ var App = function () {
 		$('#loading').html(text);
 	    }, 100);
     
+	var loading_counter = 0;
 	$(document).bind('ajaxSend', function (evt, req, settings) {
+		loading_counter++;
 		$('#loading').show();
 	    });
 	$(document).bind('ajaxComplete', function (evt, req) {
-		$('#loading').hide();
+		loading_counter--;
+		if(loading_counter <= 0) {
+		    $('#loading').hide();
+		    loading_counter = 0;
+		}
 	    });
 	$('#loading').hide();
 	
@@ -385,7 +391,6 @@ var App = function () {
 	var url = '/proxy/account/notification';
 	$.ajax(url, {
 		'success': function(data) {
-		    console.info(data);
 		    var s = '';
 		    if(data.direct_messages > 0) {
 			s += ' <a href="javascript:App.gohash(\'#!/dm\');">有新的私信</a>';
@@ -420,7 +425,6 @@ var App = function () {
 
     var cached_trends = null;
     $(document).bind('cacheRefresh', function () {
-	    console.info('cached trends clear');
 	    cached_trends = null;
 	});
     app.getTrends = function () {
@@ -491,6 +495,8 @@ var App = function () {
 	    app.notify('访问错误!');
 	} else if(req.status == 403) {
 	    app.notify('无权限');
+	} else if(req.status == 404) {
+	    app.notify('对象不存在');
 	} else {
 	    console.error(err, req);
 	}
@@ -519,7 +525,6 @@ var App = function () {
     app.refresh = function () {
 	//applicationCache.update();
 	localStorage.clear();
-	console.info('refresh');
 	$(document).trigger('cacheRefresh');
     };
 
@@ -575,11 +580,10 @@ var App = function () {
     };
     
     app.getDMConvList = function () {
-	var dmlist = new DMList();
-	dmlist.url = '/proxy/direct_messages/conversation_list?mode=lite';
+	var dmlist = new DMConvList();
+	dmlist.url = '/proxy/direct_messages/conversation_list?mode=lite&count=100';
 	dmlist.fetch({
 		'success': function (dms) {
-		    console.info(dms.toJSON());
 		    var view = new DMConvListView({
 			    el: app.getContentArea(),
 			    collection: dms

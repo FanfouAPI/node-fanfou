@@ -106,15 +106,18 @@
 <script id="status-commands-template" type="text/template">
     <div id="status-commands" class="clearfix commands">
       {{ created_at }}
+      {{#status_user }}
+      <button onclick="App.gohash('#!/dm/{{ id }}');">私信</button>
+      {{/status_user }}
 
-      <button onclick="App.gohash('#!/repost/{{ statusid }}');">转发</button>
-      <button onclick="App.gohash('#!/reply/{{ statusid }}');">回复</button>
-
+      {{# status }}
+      <button onclick="App.gohash('#!/repost/{{ id }}');">转发</button>
+      <button onclick="App.gohash('#!/reply/{{ id }}');">回复</button>
       {{# repost_status_id }}
       <button onclick="App.gohash('#!/statuses/{{ repost_status_id }}');">原帖</button>
       {{/ repost_status_id }}
-
-      <button onclick="App.gohash('#!/statuses/{{ statusid }}');">详细</button>
+      <button onclick="App.gohash('#!/statuses/{{ id }}');">详细</button>
+      {{/ status }}
     </div>
 </script>
 

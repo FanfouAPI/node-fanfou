@@ -134,15 +134,19 @@ var TimelineView = Backbone.View.extend({
 			created_at = parse_date(status.created_at);
 		    }
 		}
-
-		var html = App.template('#status-commands-template', {
-			statusid: statusid,
-			created_at: created_at,
-			repost_status_id: repost_status_id
-		    });
-		var dom = $(html);
-		//dom.insertAfter(dock);
-		dock.append(dom);
+		if(status) {
+		    var html = App.template('#status-commands-template', {
+			    statusid: statusid,
+			    status: status,
+			    status_user: (status.user.id != App.loginuser.get('id')?
+					  status.user: null),
+			    created_at: created_at,
+			    //repost_status_id: repost_status_id
+			});
+		    var dom = $(html);
+		    //dom.insertAfter(dock);
+		    dock.append(dom);
+		}
 	    }
 	},
 

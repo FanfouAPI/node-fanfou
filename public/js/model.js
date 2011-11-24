@@ -34,5 +34,17 @@ var UserList = Backbone.Collection.extend({
     });
 
 var DMList = Backbone.Collection.extend({
-	model: DirectMessage
+	model: DirectMessage,
+	parse: function (resp, xhr) {
+	    var sk = exports.decodeDMList(resp);
+	    return sk;
+	}	
+    });
+
+var DMConvList = Backbone.Collection.extend({
+	model: DirectMessage,
+	parse: function (resp, xhr) {
+	    var sk = exports.decodeDMConvList(resp);
+	    return sk;
+	}	
     });

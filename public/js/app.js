@@ -43,8 +43,9 @@ var AppRouter = Backbone.Router.extend({
 	    App.ready(function (app) {
 		    app.getStatus(statusid, function (orig) {
 			    orig = orig.toJSON();
+			    var s = orig.text.replace(/<(.|\n)*?>/g, '');
 			    app.updateStatus({
-				    text: '转@' + orig.user.name + ' ' + orig.text,
+				    text: '转@' + orig.user.name + ' ' + s,
 					repost_status_id: statusid
 					});
 			});
@@ -96,12 +97,14 @@ var AppRouter = Backbone.Router.extend({
 		    app.getStatusPage(id);
 		});
 	},
+
 	direct_message_conversation: function (peerid) {
 	    App.ready(function (app) {
 		    $(document).scrollTop(0);
 		    app.getDMConversation(peerid);
 		});
 	},
+
 	direct_messages: function () {
 	    App.ready(function (app) {
 		    $(document).scrollTop(0);
@@ -113,9 +116,9 @@ var AppRouter = Backbone.Router.extend({
 var App = function () {
     var app_router;
     var app = new Object();
-
     app.loginuser = null;
-    
+    app.statusCache = new ModelCache(Status, 'status');
+
     app.ready = function(fn) {
         if(app.loginuser) {
             fn(app);
@@ -150,8 +153,20 @@ var App = function () {
 
     app.initialize = function() {
         app_router = new AppRouter();
-        Backbone.history.start();
 	
+	window.applicationCache.addEventListener('updateready', function(e) {
+		if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+		    // Browser downloaded a new app cache.
+		    // Swap it in and reload the page to get the new hotness.
+		    window.applicationCache.swapCache();
+		    if (confirm('ABC有新版本了. 安装?')) {
+			window.location.reload();
+		    }
+		} else {
+		    // Manifest didn't changed. Nothing new to server.
+		}
+	    }, false);
+
 	setInterval(function () {
 		var text = $('#loading').html();
 		if(text.length >= 3) {
@@ -188,6 +203,7 @@ var App = function () {
 		header_touch_point = null;
 	    }
 	}
+
 	$(document).delegate('#header-wrapper', 'touchend', header_touch_end);
 	//$(document).delegate('#commands', 'touchend', header_touch_end);
 	$(document).delegate('#header-wrapper', 'mouseup', header_touch_end);
@@ -204,8 +220,6 @@ var App = function () {
 
 	$.ajaxSetup({cache: false});
 
-	check_version();
-	
 	$(document).delegate('#notify-area', 'click', function (evt) {
 		$('#notify-area').hide();
 	    });
@@ -219,6 +233,7 @@ var App = function () {
 		app.loginuser = u;
 		$(document).trigger('metadata.ready');
 	    });
+	Backbone.history.start();
     };
     app._timelineCache = {};
     app.loadTimelineCache = function (key) {
@@ -285,6 +300,9 @@ var App = function () {
 			    app.storeTimelineCache(cachekey, data);
 			}
 		    } 
+		    _.map(data.models, function (status) {
+			    app.statusCache.set(status.id, status);
+			});
 		}, 'error': function (err, req) {
 		    if(opts.error) {
 			opts.error(err, req);
@@ -367,9 +385,7 @@ var App = function () {
     };
 
     app.getStatusPage = function (statusid) {
-	var status = new Status();
-	status.url = '/proxy/statuses/show?format=html&id=' + statusid;
-	status.fetch({
+	app.getStatus(statusid, {
 		'success': function (data) {
 		    var view = new StatusView({
 			    el: app.getContentArea(),
@@ -385,6 +401,7 @@ var App = function () {
 		    }
 		}		    
 	    });
+
     };
 
     app.fetchNotification = function () {
@@ -523,12 +540,14 @@ var App = function () {
     };
     
     app.refresh = function () {
-	//applicationCache.update();
 	localStorage.clear();
 	$(document).trigger('cacheRefresh');
     };
 
     app.getStatus = function (id, opts) {
+	app.statusCache.getModel(id, '/proxy/statuses/show?format=html&id=' + id, opts);
+	return;
+
 	if(typeof opts == 'function') {
 	    opts = {success: opts};
 	}

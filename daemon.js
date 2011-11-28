@@ -42,7 +42,8 @@ function to_version(req, res, next) {
 app.get('/v/:version', to_version, apivendor.require_login, function(req, res) {
 	res.sendfile(__dirname + '/public/dashboard/index.html');
     });
-app.use(express.static(__dirname + '/public'));
+
+app.use('/public', express.static(__dirname + '/public'));
 
 app.get('/app.manifest', function (req, res) {
 	res.header('Content-Type: text/cache-manifest');
@@ -66,19 +67,20 @@ app.get('/api_callback', function(req, res) {
 	    });
     });
 
-app.get('/app_template.js', function(req, res) {
-	fs.readFile(__dirname + '/public/dashboard/template.html', 'utf-8', function (err, data) {
+app.get('/app_template/:ver.html', function(req, res) {
+	/*fs.readFile(__dirname + '/public/dashboard/template.html', 'utf-8', function (err, data) {
 		if(err) {
 		    // 404
 		    res.send('', {}, 404);
 		} else {
-		    var resp = 'function read_template() {\nvar window.a = ';
-		    resp += JSON.stringify(data);
-		    //resp += '; $(document.body).append($(a)); };';
-		    resp += '; \ndocument.body.innerHTML += window.a';
-		    res.send(resp, {'Content-Type': 'text/javascript'});
+		    var expires = new Date();
+		    expires.setTime(expires.getTime() + 24 * 3600 * 10 * 1000);
+		    res.setHeader('Expires', expires);
+		    res.setHeader('Cache-Control', 'max-age=864000');
+		    res.send(data);
 		}
-	    });
+		}); */
+	res.sendfile(__dirname + '/public/dashboard/template.html');
     });
 
 app.get('/show_account', apivendor.require_login, function(req, res) {

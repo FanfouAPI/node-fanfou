@@ -59,7 +59,6 @@ var StatusView = Backbone.View.extend({
 		status.map_image = ('http://maps.googleapis.com/maps/api/staticmap?center=' + 
 				    loc + '&zoom=13&size=200x200&sensor=false');
 	    }
-
 	    status.created_at = parse_date(status.created_at);
 	    var html = App.template('#status-template', status);
 	    var dom = $(html);

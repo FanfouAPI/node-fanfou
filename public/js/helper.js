@@ -16,21 +16,23 @@ if(window.exports == undefined) {
     window.exports = {};
 }
 
-function load_template(callback) {
-    return $.ajax('/dashboard/template.html?a=' + Math.random(), {
+window.load_template = function(callback) {
+    var ver = check_version();
+    return $.ajax('/app_template/' + ver + '.html', {
+	    cache: true,
 	    success: function (resp) {
 		if(typeof resp == 'string') {
-		    document.body.innerHTML += resp;;
+		    document.body.innerHTML += resp;
 		} else if(resp.status == 200) {
-		    console.info(resp.responseText);
 		    document.body.innerHTML += resp.responseText;
 		}
 		if(typeof callback == 'function') {
 		    callback();
 		}
 	    },
-		error: function (err, resp) {
+	    error: function (err, resp) {
 		console.error(err, resp);
+		window.location = '/';
 	    }
 	});
 }
@@ -72,7 +74,7 @@ function parse_date(reprdate) {
     }
 }
 
-function check_version() {
+window.check_version = function() {
     var t = /^\/v\/(\d+)/.exec(window.location.pathname);
     if(t) {
 	var ver = t[1];
@@ -80,5 +82,86 @@ function check_version() {
 	if(ver != curr_ver) {
 	    localStorage.setItem('version', ver);
 	}
+	return ver;
     }
+}
+
+function ModelCache(model, prefix) {
+    var _cache = {};
+    var _model = model;
+    var _prefix = prefix + '_';
+
+    function erase(key) {
+	localStorage.removeItem(_prefix + key);
+    }
+
+    function get(key) {
+       var json = localStorage.getItem(_prefix + key);
+       if(json) {
+	   //return JSON.parse(json);
+	   return new _model(JSON.parse(json));
+	} else {
+	    return null;
+	}
+    }
+
+    function set(key, obj) {
+	localStorage.setItem(_prefix + key, JSON.stringify(obj.toJSON()));
+    }
+
+    function updateModel(key, obj, use_set) {
+	var orig = get(key);
+	if(orig &&
+	   typeof orig == 'object' &&
+	   typeof obj == 'object') {
+	    orig.set(obj);
+	    set(key, orig);
+	} else if(use_set){
+	    set(key, new _model(obj));
+	}
+    }
+
+    function getModel(key, url, opts) {
+        if(typeof opts == 'function') {
+            opts = {'success': opts};
+        }
+        var u = get(key);
+        if(u) {
+            // Cache hit.
+            opts.success(u);
+            return;
+        }
+        
+        // Request from server
+        u = new _model();
+        u.url = url;
+        u.fetch({
+		success: function (data) {
+		    if(key == '*') {
+			set(data.id, data);
+		    }
+		    set(key, data);
+
+		    if(typeof opts.success == 'function') {
+			opts.success(data);
+		    } else {
+			console.warn('opts.success is not a function');
+		    }
+		},
+		error: function () {
+		    if(typeof opts.error == 'function') {
+			opts.error.apply(u, arguments);
+		    } else {
+			App.notifyTitle('找不着对象' + key);
+		    }
+		}
+	    });
+    }
+    return {
+        'get': get,
+        'set': set,
+	'erase': erase,
+	'getModel': getModel,
+	'updateModel': updateModel
+	    };
 }

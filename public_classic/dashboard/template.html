@@ -1,0 +1,376 @@
+<script id="layout-wide-template" type="text/template">
+  <div class="container">
+    <div id="header" class="clearfix">
+      <h1 class="left">
+	<a href="#">
+	  <p class="pngfix global-header-content">首页</p>
+	</a>
+      </h1>
+      <div id="navigation" class="right r-box">
+	<div class="r-box-content clearfix">
+	  <ul class="left">
+	    <li><a href="javascript:App.gohash('#');">首页</a></li>
+	    <li><a href="javascript:App.gohash('#!/' + App.loginuser.get('id'));">我的空间</a></li>
+	    <li><a href="javascript:App.gohash('#!/mentions');">提到我的</a></li>
+	    <li><a href="javascript:App.gohash('#!/public');">随便看看</a></li>
+	    <li><a href="javascript:App.logout();">退出</a></li>
+	  </ul>
+	</div>
+      </div>	
+    </div>
+    
+    <div id="content-layout">
+      <!-- content -->
+      <div id="layout-wide" class="clearfix r-box">
+	<div id="main" class="left clearfix left-r-box">
+	  <div class="r-box-content">
+	    <div id="main-header" class="clearfix">
+	    </div>
+	    <div id="timeline">
+	    </div>
+	  </div>
+	</div>
+	<div id="sidebar" class="left right-r-box">
+	</div>
+      </div>
+      <!-- endcontent -->
+    </div>
+
+    <div id="footer" class="r-box">
+      <div class="r-box-content clearfix text-center">
+	© 2011 fanfou.com
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<script id="layout-narrow-template" type="text/template">
+  <div class="container narrow-container">
+    <div id="header" class="clearfix">
+      <h1 class="left">
+	<a href="#">
+	  <p class="pngfix global-header-content">首页</p>
+	</a>
+      </h1>
+      <div id="navigation" class="right r-box">
+	<div class="r-box-content clearfix">
+	  <ul class="left">
+	    <li><a href="javascript:App.gohash('#');">首页</a></li>
+	    <li><a href="javascript:App.gohash('#!/' + App.loginuser.get('id'));">我的空间</a></li>
+	    <li><a href="javascript:App.gohash('#!/mentions');">提到我的</a></li>
+	    <li><a href="javascript:App.gohash('#!/public');">随便看看</a></li>
+	    <li><a href="javascript:App.logout();">退出</a></li>
+	  </ul>
+	</div>
+      </div>	
+    </div>
+    
+    <div id="content-layout">
+      <!-- content -->
+      <div id="layout-narrow" class="clearfix r-box">
+	  <div class="r-box-content">
+	  </div>
+	</div>
+      </div>
+      <!-- endcontent -->
+    </div>
+
+  </div>
+</script>
+
+<script id="layout-narrow-template" type="text/template">
+  <div id="layout-narrow" class="clearfix r-box">
+    <div class="r-box-content">
+    </div>
+  </div>
+</script>
+
+<script id="update-status-template" type="text/template">
+  <div id="update-status" class="clearfix">
+    <h2>你在做神马</h2>
+    <form action="/statuses/update" method="POST" enctype="multipart/form-data">
+      <textarea name="status">{{ text }}</textarea>
+      <input type="hidden" name="repost_status_id" value="{{ repost_status_id }}"/>
+      <input type="hidden" name="in_reply_to_status_id" value="{{ in_reply_to_status_id }}"/>
+      <input type="hidden" name="location" id="id_location" value=""/>
+     <div>
+      <input type="submit" class="right formbutton" value="发送"></input>
+     </div>
+
+      <div class="hide" id="upload">
+	<input type="file" name="photo"/>
+      </div>
+    </form>
+  </div>
+</script>
+
+<script id="panel-template" type="text/template">
+  <div id="logo" class="clearfix"></div>
+  <ul id="navlist">
+    <li><a href="#">首页</a></li>
+    <li><a href="#">个人空间</a></li>
+  </ul>
+</script>
+
+<script id="notify-template" type="text/template">
+  <p class="notify">{{{ content }}}</p>
+</script>
+
+<script id="user-info-template" type="text/template">
+  <div class="clearfix">
+    <div class="left clearfix">
+      <img src="{{ profile_image_url_large }}"/>
+    </div>
+    <div class="left clearfix user-panel">
+      <h1>{{ name }}</h1>
+    </div>
+  </div>
+</script>
+
+<script id="status-template" type="text/template">
+  <div class="clearfix">
+    <div class="clearfix status-detail" rel="{{ id }}">
+      {{# user }}
+      <div class="avatar left clearfix">
+	<a href="javascript:App.gotoUserTimeline('{{ id }}');">
+	  <img src="{{ profile_image_url_large }}"></img>
+	</a>
+      </div>
+      <div class="clearfix status-content">
+	<div class="clearfix status-user-name">
+	  <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
+	</div>
+	<div class="left clearfix">
+	  <div class="left clearfix status-content-text">
+            {{{ text }}}
+	    {{# photo }}
+	    <div class="image clearfix">
+	      <img src="{{ thumburl }}" rel="{{ largeurl }}"/>
+	    </div>
+	    {{/ photo }}
+	    {{/ user }}
+	    <div class="stamp clearfix">
+	      {{ created_at }}
+	    </div>
+	  </div>
+	  <div class="right clearfix status-commands">
+	    <ul>
+	      <li><a href="#">转发</a></li>
+	      <li><a href="#">回复</a></li>
+	    </ul>
+	  </div>
+	</div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script id="timeline-status-template" type="text/template">
+    <div class="status-row clearfix" rel="{{ id }}" repost="{{ repost_status_id }}">
+      {{# user }}
+
+      {{# show_avatar }}
+      <div class="avatar left clearfix">
+	<a href="javascript:App.gotoUserTimeline('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
+      </div>
+      {{/ show_avatar }}
+      <div class="status-content clearfix">
+	<div class="left status-content-text">
+	  {{# show_avatar }}
+          <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
+	  {{/ show_avatar }}
+	  {{/ user }}
+	  {{{ text }}}
+	  {{# photo }}
+	  <div class="image clearfix">
+	    <img src="{{ thumburl }}" rel="{{ largeurl }}"/>
+	  </div>
+	  {{/ photo }}
+	  <div class="stamp clearfix">
+	    <a href="#!/statuses/{{ id }}">{{ created_at }}</a>
+	  </div>
+	</div>
+	<div class="right clearfix status-commands hide">
+	  <ul>
+	    <li><a href="#">转发</a></li>
+	    <li><a href="#">回复</a></li>
+	  </ul>
+	</div>
+      </div>
+    </div>
+</script>
+
+<script id="timeline-template" type="text/template">
+  <div>
+    {{# prefix }}{{{ prefix }}}{{/ prefix }}
+    <div class="timeline-notice text-center hide"></div>
+    <div id="timeline-rows" class="timeline {{ view_classes }}" rel="{{ url }}" >
+    </div>
+    {{^ warning }}
+    <div class="clearfix">
+      <button id="timeline-more" class="left formbutton">更多</button>
+      <button id="timeline-top" class="left formbutton">回到顶部</button>
+    </div>
+    {{/ warning }}
+  </div>
+</script>
+
+<script id="trends-template" type="text/template">
+  <div id="trends" class="query-list">
+    {{ title }}<br/>
+    {{#trends }}
+    <span><a href="#!/q/{{ query }}">{{ name }}</a></span>
+    {{/trends }}
+  </div>
+</script>
+
+<script id="status-commands-template" type="text/template">
+    <div id="status-commands" class="clearfix commands">
+      {{ created_at }}
+      {{#status_user }}
+      <button onclick="App.gohash('#!/dm/{{ id }}');">私信</button>
+      {{/status_user }}
+
+      {{# status }}
+      <button onclick="App.gohash('#!/repost/{{ id }}');">转发</button>
+      <button onclick="App.gohash('#!/reply/{{ id }}');">回复</button>
+      {{# repost_status_id }}
+      <button onclick="App.gohash('#!/statuses/{{ repost_status_id }}');">原帖</button>
+      {{/ repost_status_id }}
+      <button onclick="App.gohash('#!/statuses/{{ id }}');">详细</button>
+      {{/ status }}
+    </div>
+</script>
+
+<script id="userlist-template" type="text/template">
+  <div id="userlist-area" class="clearfix">
+    <div id="user-box" class="clearfix">
+      {{# userlist }}
+      <div class="left clearfix user-item" rel="{{ id }}">
+	<a class="user" onclick="App.gotoUserTimeline('{{ id }}');">
+	  <img src="{{ profile_image_url }}" title="{{ name }}" draggable="true"/>
+	  <div class="name">{{ short_name }}</div>
+	</a>
+      </div>
+      {{/ userlist }}
+    </div>
+  </div>
+</script>
+
+<script id="dmconv-list-template" type="text/template">
+  <div id="dm-convlist" class="clearfix">
+    {{# dmlist }}
+    {{# peer }}
+    <div class="clearfix dm-row {{ sender_class }}" rel="{{ id }}">
+      <div class="avatar left">
+	<a href="javascript:App.gotoUserTimeline('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
+      </div>
+      <a href="javascript:App.gotoUserTimeline('{{ id }}');">{{ name }}</a>
+    {{/ peer }}
+    {{# dm }}
+     {{{ text }}}
+    {{/ dm }}
+    </div>    
+    {{/ dmlist }}
+  </div>
+</script>
+
+<script id="dm-conversation-template" type="text/template">
+  <div id="dm-convlist" class="clearfix">
+    <div class="clearfix dm-row dm-send avatar-right">
+      <form action="/proxy/direct_messages/new" method="POST">
+	{{# loginuser }}
+	<div class="avatar">
+	  <img src="{{ profile_image_url }}"></img>
+	</div>
+	{{/ loginuser }}
+	<input type="hidden" name="user" value="{{ user }}"/>
+	<textarea name="text"></textarea>
+      </form>
+    </div>
+
+    {{# dmlist }}
+    {{# sender }}
+    <div class="clearfix dm-row {{ avatar_align }}" rel="{{ id }}">
+      <div class="avatar">
+	<a href="javascript:App.gotoUserTimeline('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
+      </div>
+    {{/ sender }}
+      <div class="cnt">{{{ text }}}</div>
+    </div>    
+    {{/ dmlist }}
+  </div>
+</script>
+
+<script id="dm-convlist-commands-template" type="text/template">
+  <div id="dm-convlist-commands" class="clearfix commands">
+    <button onclick="App.gohash('#!/dm/{{ peerid }}');">看看</button>
+  </div>
+</script>
+
+<script id="dm-commands-template" type="text/template">
+  <div id="dm-commands" class="clearfix commands">
+    <button onclick="">删除</button>
+  </div>
+</script>
+
+<script id="sidebar-home-template" type="text/template">
+  <div class="clearfix r-box-content" id="sidebar-home">
+    <div class="clearfix">
+      <div class="left clearfix">
+	<img src="{{ profile_image_url }}"/>
+      </div>
+      <div class="left clearfix sidebar-name">{{ name }}</div>
+    </div>
+    <ul class="clearfix user-stats">
+      <li class="left">
+	<span class="block count">{{ friends_count }}</span>
+	<span class="text">朋友</span>
+      </li>
+	<li class="left">
+	  <span class="block count">{{ followers_count }}</span>
+	  <span class="text">关注</span>
+	</li>
+      <li class="left last">
+	<a href="javascript:App.gotoUserTimeline('{{ id }}');">
+	  <span class="block count">{{ statuses_count }}</span>
+	  <span class="text">消息</span>
+	</a>
+      </li>
+    </ul>
+  </div>
+</script>
+
+<script id="sidebar-search-template" type="text/template">
+  <div id="search" class="clearfix">
+    <h3>搜索</h3>
+    <div class="r-box-content">
+      <input id="id_q" name="q" class="left clearfix text-input"></input>
+      <button id="exec" class="left clearfix" type="submit">搜索</button>
+    </div>
+  </div>
+</script>
+
+<script id="sidebar-user-template" type="text/template">
+  <div class="r-box-content">
+    <div class="clearfix sidebar-home">
+      <div class="clearfix">
+      </div>
+      <ul class="clearfix user-stats">
+      <li class="left">
+	<span class="block count">{{ friends_count }}</span>
+	<span class="text">朋友</span>
+      </li>
+      <li class="left">
+	<span class="block count">{{ followers_count }}</span>
+	<span class="text">关注</span>
+      </li>
+      <li class="left last">
+	<span class="block count">{{ statuses_count }}</span>
+	<span class="text">消息</span>
+      </li>
+      </ul>
+    </div>
+  </div>
+</script>

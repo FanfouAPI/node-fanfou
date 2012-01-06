@@ -5,13 +5,17 @@ var formidable = require('formidable');
 var fs = require('fs');
 var apivendor = require('./apivendor.js');
 var settings =  require('./settings.js');
-var spec = require('./public/js/spec.js');
+var spec = require('./public_classic/js/spec.js');
 var helper = require('./helper.js');
 apivendor.config(settings.oauth_info);
 
-files = ['public', 'apivendor.js',
+files = ['public_classic', 'apivendor.js',
 	 'daemon.js', 'helper.js',
 	 'settings.js'];
+
+function public_file(fn) {
+    return __dirname + '/public_classic' + fn;
+}
 
 // Setup the Express.js server
 var app = express.createServer();
@@ -40,14 +44,14 @@ function to_version(req, res, next) {
 }
 
 app.get('/v/:version', to_version, apivendor.require_login, function(req, res) {
-	res.sendfile(__dirname + '/public/dashboard/index.html');
+	res.sendfile(public_file('/dashboard/index.html'));
     });
 
-app.use('/public', express.static(__dirname + '/public'));
+app.use('/public', express.static(__dirname + '/public_classic'));
 
 app.get('/app.manifest', function (req, res) {
 	res.header('Content-Type: text/cache-manifest');
-	res.sendfile(__dirname + '/public/app.manifest');
+	res.sendfile(public_file('/app.manifest'));
     });
 
 app.get('/logout', function (req, res) {
@@ -68,19 +72,7 @@ app.get('/api_callback', function(req, res) {
     });
 
 app.get('/app_template/:ver.html', function(req, res) {
-	/*fs.readFile(__dirname + '/public/dashboard/template.html', 'utf-8', function (err, data) {
-		if(err) {
-		    // 404
-		    res.send('', {}, 404);
-		} else {
-		    var expires = new Date();
-		    expires.setTime(expires.getTime() + 24 * 3600 * 10 * 1000);
-		    res.setHeader('Expires', expires);
-		    res.setHeader('Cache-Control', 'max-age=864000');
-		    res.send(data);
-		}
-		}); */
-	res.sendfile(__dirname + '/public/dashboard/template.html');
+	res.sendfile(public_file('/dashboard/template.html'));
     });
 
 app.get('/show_account', apivendor.require_login, function(req, res) {

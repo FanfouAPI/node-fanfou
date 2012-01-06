@@ -54,7 +54,6 @@ function get_last_modified() {
 		}
 	    }
 	} else {
-	    //console.info('checking', f);
 	    m = new Date(stat.mtime).getTime() / 1000;
 	    if(m > lm) {
 		lm = m;

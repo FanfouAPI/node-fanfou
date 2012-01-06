@@ -1,0 +1,394 @@
+.left { float: left; }
+.right { float: right; }
+.clear { clear: both;}
+.text-center { text-align: center;}
+.block {display: block; }
+.clearfix { display: block; }
+.clearfix:after { 
+		content: '\0020';
+		display: block;
+		height: 0;
+		clear: both;
+		visibility: hidden;
+		overflow: hidden;
+}
+.hide { display: none;}
+
+ul { list-style: none;}
+* {
+      margin: 0; padding: 0;
+      font-family: Tahoma,Helvetica,sans-serif;
+      font-size: 14px;
+      line-height: 25px;
+}
+
+h1 {
+   font-size: 26px;
+}
+
+h3 {
+   font-size: 18px;
+}
+
+body {
+     font-size: 12px;
+}
+a {
+  color: #06C;
+  text-decoration: underline;
+}
+
+body {
+     background-attachment: fixed;     
+}
+/* specific contents */
+body.default {
+     background: top left no-repeat;
+     background-color: #ACDAE5;
+     background-image: url(http://static.fanfou.com/img/bg/0.png);
+
+     color: #222;
+}
+
+.formbutton {
+  	  padding: 0 1.5em;
+	  height: 28px;
+	  line-height: 28px;
+	  border: 1px solid #CCC;
+	  font-size: 15px;
+	  cursor: pointer;
+	  color: #444;
+	  display: inline-block;
+          background: #CBCBCB;
+	  background: -webkit-gradient(linear,0 0,0 bottom, from(white), to(#CBCBCB));
+	  background: -webkit-linear-gradient(white, #CBCBCB);
+	  background: -moz-linear-gradient(white, #CBCBCB);
+	  background: -ms-linear-gradient(white, #CBCBCB);
+	  background: -o-linear-gradient(white, #CBCBCB);
+	  border-radius: 4px;
+}
+
+.container {
+	    width: 775px;
+	    margin: 0 auto;
+}
+
+.narrow-container {
+	    width: 600px;
+	    margin: 0 auto;
+}
+
+.global-header-content {
+		       width: 244px;
+		       height: 42px;
+		       text-indent: -9999px;
+		       background: transparent url(http://static2.fanfou.com/img/fanfou_beta.png) 0 0 no-repeat;
+}
+
+.narrow-container .global-header-content {
+		       width: 91px;
+}
+
+.r-box {
+       background: white;
+       border-radius: 8px;              
+}
+
+.left-r-box {
+         border-top-left-radius: 8px;
+	 border-bottom-left-radius: 8px;
+}
+
+.right-r-box {
+	      border-top-right-radius: 8px;
+      	 border-bottom-right-radius: 8px;    
+}
+
+.r-box-content {
+	       padding: 5px 5px;
+}
+
+#header {
+	float: none;
+	padding: 1em 0;
+}
+#header a {
+	text-decoration: none;
+}
+
+.container #header h1 {
+	display: block;
+	width: 203px;
+}
+
+.narrow-container #header h1 {
+	display: block;
+	width: 91px;
+}
+
+#navigation {
+	    margin-top: 7px;
+}
+
+#navigation ul li {
+	    float: left;
+}
+
+#navigation ul li a {
+	    padding: 2px 7px;
+}
+
+/* main */
+#layout-wide {
+	 background-color: #E2F2DA;
+}
+
+#main {
+      width: 540px;
+      background: white;
+       border-right: 1px solid #B2D1A3;
+
+}
+
+#main .r-box-content {
+      padding: 20px;
+}
+
+#sidebar {
+	 background-color: #E2F2DA;
+	 width: 234px;
+}
+
+#sidebar .r-box-content {
+	 padding: 20px 20px 20px 15px;
+}
+
+/* update status */
+#update-status textarea {
+	       width: 100%;
+	       height: 3.6em;
+	       font-size: 14px;
+}
+
+#update-status h2 {
+	       font-size: 16px;
+}
+
+
+/*#update-status .formbutton {
+	       width: 115px;
+	       height: 32px;
+	       border: 0;
+	       background: url(http://static2.fanfou.com/img/button-send.gif) 0 0 no-repeat;
+	       color: #444;
+	       font-size: 15px;
+	       font-weight: bold;
+	       line-height: 32px;
+	       letter-spacing: .5em;
+	       cursor: pointer;
+	       padding: 0 1.5em;
+} */
+
+/* timeline */
+.timeline {
+	  margin: 6px 0;
+	  border-top: 1px dashed #DDD;
+}
+
+.timeline-notice {
+		 margin: 0 0 10px 0;
+		 background: lightyellow;
+}
+
+.status-row {
+	    padding: 9px 6px 6px 6px;
+	    min-height: 50px;
+	    border-bottom: 1px dashed #DDD;
+}
+.status-row:hover {
+		  background: whiteSmoke;
+}
+
+.status-row .avatar {
+	    padding-top: 2px;
+	    padding-right: 10px;
+}
+
+.status-row .status-content {
+	    width: 430px;
+	    word-break: break-all;
+	    word-wrap: break-word;
+	    overflow: hidden;
+}
+
+
+.status-row .status-content-text {
+	    width: 384px;
+	    line-height: 18px;
+}
+
+.status-row .status-content-text a{
+	    line-height: 18px;
+}
+
+.user .status-row .status-content {
+      width: 482px;
+}
+
+.user .status-row .status-content-text {
+      width: 432px;
+}
+
+.status-commands {
+		 width: 40px;
+}
+
+.status-commands li {
+	    line-height: 14px;
+	    border: 1px solid #999;
+	    border-radius: 2px;
+	    text-align: center;
+	    margin: 2px;
+}
+
+.status-commands li a {
+	    font-size: 12px;
+	    color: #999;
+	    text-decoration: none;
+	    line-height: 14px;
+}
+
+.status-row .image img {
+	    max-width: 340px;
+	    max-height: 1000px;
+	    cursor: pointer;
+}
+
+.stamp a,
+.stamp {
+	    color: #626262;
+	    font-size: 12px;
+}
+
+/* status-detail */
+.status-detail {
+	       padding: 5px;
+}
+.status-detail .status-content {
+	    width: 458px;
+	    word-break: break-all;
+	    word-wrap: break-word;
+	    padding: 0 0 0 20px;
+	    overflow: hidden;
+}
+
+.status-user-name a {
+		  font-size: 16px;
+}
+.status-detail .status-content-text {
+	    width: 400px;
+	    margin-right: 10px;
+}
+
+.status-detail .image {
+	       margin: 10px;
+	       padding: 10px;
+}
+.status-detail .image img {
+	    max-width: 340px;
+	    max-height: 1000px;
+	    cursor: pointer;
+}
+
+#timeline-more {
+	       width: 328px;
+}
+#timeline-top {
+	      width: 130px;
+}
+
+/* search */
+.search b {
+	color: darkred;
+}
+
+.user-panel {
+	    margin-left: 10px;
+	    padding: 6px 0 0 10px;
+}
+
+.user-panel h1 {
+	    font-size: 26px;
+	    line-height: 30px;
+}
+
+/* sidebar */
+.sidebar-name {
+        	line-height: 20px;
+	      margin: 6px 0 0 10px;
+	      width: 130px;
+	      word-wrap: nowrap;
+	      overflow: hidden;
+	      font-size: 18px;
+	      font-weight: bold;
+}
+
+ul.user-stats li {
+	      width: 60px;
+	      border-right: 1px solid #955a95;
+	      margin-right: 6px;
+}
+
+ul.user-stats li.last {
+	      border: none;
+	      margin-right: 0;
+}
+
+ul.user-stats li a {
+	      text-decoration: none;
+}
+
+ul.user-stats span.count {
+	      font-size: 20px;
+	      font-weight: bold;
+	      font-family: "Times New Roman",Times,serif;
+}
+
+ul.user-stats span.text {
+	      font-size: 14px;
+	      line-height: 20px;
+	      color: #666;
+}
+
+#search {
+	margin: 10px 0;
+}
+
+#search #id_q {
+	width: 165px;
+	height: 21px;
+	line-height: 20px;
+	border: 1px solid #ccc;
+}
+
+#search #exec {
+	line-height: 22px;
+	font-size: 14px;
+	height: 22px;
+}
+
+#sidebar h3 {
+	 background: white;
+	 color: #666;
+	 margin: 6px 0 0 0;
+	 padding: 0 2px 0 10px;
+	 font-size: 16px;
+}
+#search .r-box-content {
+	padding-top: 5px;
+}
+
+/* footer */
+#footer {
+	margin: 1.25em 0;
+}

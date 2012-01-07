@@ -3,39 +3,46 @@
     <meta name="viewport" content="user-scalable=0"/>
     <meta http-equiv='Content-Type' content="text/html; charset=utf-8"/>
     <title>TimelineCore</title>
-    <link rel="stylesheet" type="text/css" href="/public/css/landing.css"></link>
+    <link rel="stylesheet" type="text/css" href="/public/css/application.css"></link>
   </head>
-  <body>
-    <div id="content">
-      <div id="wording">
-	<p>饭否Timeline.Core是个API的试验平台<a target="_blank"
-	href="https://github.com/FanfouAPI/node-fanfou">开源</a>网站，
-	主要目的探索一些web开发的前沿技术，如HTML5, API等，为各种饭否应用作技术准备。
+  <body class="default">
+  <div class="container narrow-container">
+    <div id="header" class="clearfix">
+      <h1 class="left">
+	<a href="#">
+	  <p class="pngfix global-header-content">首页</p>
+	</a>
+      </h1>
+      <div id="navigation" class="right r-box">
+	<div class="r-box-content clearfix">
+	  <ul class="left">
+	    <li><a target="_blank" href="http://fanfou.com">饭否</a></li>
+	    <li><a href="/api_authorize">到饭否登录</a></li>
+	  </ul>
+	</div>
+      </div>	
+    </div>
+    
+    <div id="content-layout">
+      <!-- content -->
+      <div id="layout-narrow" class="clearfix r-box">
+	<div class="r-box-content">
+	  <p>饭否Timeline.Core是个API的试验平台
+	    <a target="_blank"
+	       href="https://github.com/FanfouAPI/node-fanfou">开源</a>网站，
+	    主要目的探索一些web开发的前沿技术，如HTML5, API等，为各种饭否应用作技术准备。
 	  </p>
-	<p>
-	为了集中力量在研究上，我们在UI上并没有过多加工，喜欢漂亮简洁界面的同学请访问
-	<a href="http://fanfou.com">fanfou.com</a>. 
-	</p>
-
-	<p>由于HTML5/CSS3的技术要求，您的浏览器可能不能正常访问最好使用HTML5/CSS3兼容浏览器访问
-	</p>
+	  <p>
+	    为了集中力量在研究上，我们在UI上并没有过多加工，喜欢漂亮简洁界面的同学请访问
+	    <a href="http://fanfou.com">fanfou.com</a>. 
+	  </p>	  
+	  <p>由于HTML5/CSS3的技术要求，您的浏览器可能不能正常访问最好使用HTML5/CSS3兼容浏览器访问</p>
+	  <div>
+	    <a href="/api_authorize">点此到饭否获得授权并登录 &gt; &gt;</a>
+	  </div>
+	</div>
       </div>
-      <div id="recent-change">
-	最新修改
-	<ul>
-	  <li>私信列表和对话，发私信功能.</li>
-	  <li>获取和显示地理信息</li>
-	  <li>图片上传</li>
-	  <!--<li>转发消息</li>-->
-	  <!--<li>UserList内容压缩</li> -->
-	  <!--<li>消息上下文</li> -->
-	  <!--<li>重写了timeline压缩/解压算法.</li> -->
-	  <!--<li>TouchEvent: 使用手指滑动header和消息弹出命令操作.</li> -->
-	</ul>
-      </div>
-      <div>
-	<a href="/api_authorize">点此到饭否获得授权并登录 &gt; &gt;</a>
-      </div>
+      <!-- endcontent -->
     </div>
   </body>
 </html>

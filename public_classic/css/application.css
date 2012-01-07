@@ -41,6 +41,7 @@ a {
 body {
      background-attachment: fixed;     
 }
+
 /* specific contents */
 body.default {
      background: top left no-repeat;
@@ -168,12 +169,20 @@ body.default {
 	       width: 100%;
 	       height: 3.6em;
 	       font-size: 14px;
+	       line-height: 18px;
 }
 
 #update-status h2 {
 	       font-size: 16px;
 }
 
+#facebox #update-status {
+	 width: 500px;
+}
+
+#facebox #update-status textarea {
+	 height: 4.6em;
+}
 
 /*#update-status .formbutton {
 	       width: 115px;
@@ -244,11 +253,11 @@ body.default {
 }
 
 .status-commands li {
-	    line-height: 14px;
+	    line-height: 12px;
 	    border: 1px solid #999;
 	    border-radius: 2px;
 	    text-align: center;
-	    margin: 2px;
+	    margin: 0 2px;
 }
 
 .status-commands li a {
@@ -259,7 +268,7 @@ body.default {
 }
 
 .status-row .image img {
-	    max-width: 340px;
+	    max-width: 380px;
 	    max-height: 1000px;
 	    cursor: pointer;
 }

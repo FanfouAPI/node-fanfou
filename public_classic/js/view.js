@@ -99,7 +99,8 @@ var TimelineView = Backbone.View.extend({
 	    'click .notice-new': 'render_fresh',
 	    'mouseover .status-row': 'hover_status',
 	    'mouseout .status-row': 'leave_status',
-	    'get_new #timeline': 'get_new'
+	    'get_new #timeline': 'get_new',
+	    'status.destroy #timeline': 'on_status_destroy'
 	},
 
 	hover_status: function (evt) {
@@ -137,6 +138,13 @@ var TimelineView = Backbone.View.extend({
 	    img.attr('src', urla);
 	},
 
+	on_status_destroy: function (evt, statusid) {
+	    var view = this;
+	    this.$('#' + statusid).slideUp(function () {
+		    view.$('#' + statusid).remove();
+		    App.timelineCache.erase(view.url);
+		});
+	},
 	initialize: function (opts) {
 	    this.view_classes = opts.view_classes || '';
 	    this.warning = opts.warning || '';
@@ -156,8 +164,8 @@ var TimelineView = Backbone.View.extend({
 		obj.photo = null;
 	    }
 	    obj.created_at = parse_date_str(obj.created_at);
+	    obj.deletable = obj.user.id == App.loginuser.id;
 	    obj.show_avatar = this.show_avatar;
-	    
 	    var sthtml = App.template('#timeline-status-template', obj);
 	    var stdom = $(sthtml);
 	    process_status_dom(stdom, obj);
@@ -262,6 +270,7 @@ var UpdateStatusView = Backbone.View.extend({
 	    this.text = opts.text || '';
 	    this.repost_status_id = opts.repost_status_id || '';
 	    this.in_reply_to_status_id = opts.in_reply_to_status_id || '';
+	    this.as_box = opts.as_box || false;
 	},
 
 	render: function () {
@@ -270,17 +279,32 @@ var UpdateStatusView = Backbone.View.extend({
 		in_reply_to_status_id: this.in_reply_to_status_id,
 		text: this.text
 	    };
-	    var html = App.template('#update-status-template', context);
-	    this.$('.r-box-content #main-header').html(html);
-	    this.$('#update-status form').ajaxForm({
+	    
+	    var form;
+	    if(this.as_box) {
+		App.facebox('#update-status-template', context);
+		form = $('#facebox #update-status form');
+	    } else {
+		var html = App.template('#update-status-template', context);
+		this.$('.r-box-content #main-header').html(html);
+		this.$('textarea').focus().click();
+		form = this.$('#update-status form');
+	    }
+
+	    var view = this;
+	    form.ajaxForm({
 		    dataType: 'json',
 		    success: function (data) {
-			App.gohash('#');
+			if(view.as_box) {
+			    $(document).trigger('close.facebox');
+			} else {
+			    App.gohash('#');
+			}
 		    },
-         		complete: function () {
+		    complete: function () {
 		    }
 		});
-	    this.$('textarea').focus().click();
+
 	}
     });
 
@@ -301,7 +325,8 @@ var TrendsView = Backbone.View.extend({
 			trends: trends,
 			title: this.title
 		    });
-		$(html).insertAfter(this.el);
+		//$(html).insertAfter(this.el);
+		this.$('.r-box-content').append(html);
 	    }
 	}
     });
@@ -324,7 +349,8 @@ var QueryListView = Backbone.View.extend({
 			trends: trends,
 			title: this.title
 		    });
-		$(html).insertAfter(this.el);
+		//$(html).insertAfter(this.el);
+		this.$('.r-box-content').append(html);
 	    }
 	}
     });

@@ -16,6 +16,7 @@ var dmconv_path = {'/direct_messages/conversation': true};
 
 var status_fields = ['id', 'text', 'created_at', 
 		     'in_reply_to_status_id',
+		     'in_reply_to_screen_name',
 		     'repost_status_id', 'location',
 		     ['photo', 'largeurl'],
 		     ['photo', 'imageurl'],

@@ -11,7 +11,7 @@
 	  <ul class="left">
 	    <li><a href="javascript:App.gohash('#');">首页</a></li>
 	    <li><a href="javascript:App.gohash('#!/' + App.loginuser.get('id'));">我的空间</a></li>
-	    <li><a href="javascript:App.gohash('#!/mentions');">提到我的</a></li>
+	    <li id="mentions"><a href="javascript:App.gohash('#!/mentions');">提到我的</a></li>
 	    <li><a href="javascript:App.gohash('#!/public');">随便看看</a></li>
 	    <li><a href="javascript:App.logout();">退出</a></li>
 	  </ul>
@@ -58,7 +58,7 @@
 	  <ul class="left">
 	    <li><a href="javascript:App.gohash('#');">首页</a></li>
 	    <li><a href="javascript:App.gohash('#!/' + App.loginuser.get('id'));">我的空间</a></li>
-	    <li><a href="javascript:App.gohash('#!/mentions');">提到我的</a></li>
+	    <li id="mentions"><a href="javascript:App.gohash('#!/mentions');">提到我的</a></li>
 	    <li><a href="javascript:App.gohash('#!/public');">随便看看</a></li>
 	    <li><a href="javascript:App.logout();">退出</a></li>
 	  </ul>
@@ -97,7 +97,6 @@
      <div>
       <input type="submit" class="right formbutton" value="发送"></input>
      </div>
-
       <div class="hide" id="upload">
 	<input type="file" name="photo"/>
       </div>
@@ -156,8 +155,11 @@
 	  </div>
 	  <div class="right clearfix status-commands">
 	    <ul>
-	      <li><a href="#">转发</a></li>
-	      <li><a href="#">回复</a></li>
+	      <li><a href="javascript:App.repostStatus('{{ id }}');">转发</a></li>
+	      <li><a href="javascript:App.replyStatus('{{ id }}');">回复</a></li>
+	      {{# deletable }}
+	      <li><a href="javascript:App.deletaStatus('{{ id }}');">删除</a></li>
+	      {{/ deletable }}
 	    </ul>
 	  </div>
 	</div>
@@ -167,7 +169,7 @@
 </script>
 
 <script id="timeline-status-template" type="text/template">
-    <div class="status-row clearfix" rel="{{ id }}" repost="{{ repost_status_id }}">
+    <div class="status-row clearfix" id="{{ id }}" rel="{{ id }}" repost="{{ repost_status_id }}">
       {{# user }}
 
       {{# show_avatar }}
@@ -189,12 +191,18 @@
 	  {{/ photo }}
 	  <div class="stamp clearfix">
 	    <a href="#!/statuses/{{ id }}">{{ created_at }}</a>
+	    {{# in_reply_to_status_id }}
+	    <span>给<a href="#!/statuses/{{ in_reply_to_status_id }}">{{ in_reply_to_screen_name }}</a>的回复</span>
+	    {{/ in_reply_to_status_id }}
 	  </div>
 	</div>
 	<div class="right clearfix status-commands hide">
 	  <ul>
-	    <li><a href="#">转发</a></li>
-	    <li><a href="#">回复</a></li>
+	      <li><a href="javascript:App.repostStatus('{{ id }}');">转发</a></li>
+	      <li><a href="javascript:App.replyStatus('{{ id }}');">回复</a></li>
+	      {{# deletable }}
+	      <li><a href="javascript:App.deleteStatus('{{ id }}');">删除</a></li>
+	      {{/ deletable }}
 	  </ul>
 	</div>
       </div>
@@ -217,8 +225,8 @@
 </script>
 
 <script id="trends-template" type="text/template">
-  <div id="trends" class="query-list">
-    {{ title }}<br/>
+  <div id="trends" class="query-list clearfix">
+    <div>{{ title }}</div>
     {{#trends }}
     <span><a href="#!/q/{{ query }}">{{ name }}</a></span>
     {{/trends }}
@@ -346,8 +354,10 @@
   <div id="search" class="clearfix">
     <h3>搜索</h3>
     <div class="r-box-content">
+      <div class="clearfix">
       <input id="id_q" name="q" class="left clearfix text-input"></input>
       <button id="exec" class="left clearfix" type="submit">搜索</button>
+      </div>
     </div>
   </div>
 </script>

@@ -47,6 +47,7 @@ app.get('/v/:version', to_version, apivendor.require_login, function(req, res) {
 	res.sendfile(public_file('/dashboard/index.html'));
     });
 
+app.use('/facebox', express.static(__dirname + '/facebox'));
 app.use('/public', express.static(__dirname + '/public_classic'));
 
 app.get('/app.manifest', function (req, res) {
@@ -140,6 +141,7 @@ app.post('/statuses/update', apivendor.require_login, function(req, res) {
 app.post('/proxy/:section/:action', apivendor.require_login, function(req, res) {
 	var path = '/' + req.params.section + '/' + req.params.action;
 	var api = apivendor.from_request(req);
+	console.info('xxx', req.body);
 	api.post(path, req.body, {
 		'success': function (data) {
 		    res.send(data);

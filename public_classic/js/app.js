@@ -8,10 +8,10 @@ var AppRouter = Backbone.Router.extend({
 	    '!/public': 'public_timeline',
 	    '!/statuses/:id': 'status_detail',
 	    '!/q/:query': 'search',
-	    '!/search': 'search_form',
-	    '!/friends': 'friends_list',
-	    '!/dm/:peerid': 'direct_message_conversation',
-	    '!/dm': 'direct_messages',
+	    //'!/search': 'search_form',
+	    //'!/friends': 'friends_list',
+	    //'!/dm/:peerid': 'direct_message_conversation',
+	    //'!/dm': 'direct_messages',
 	    '!/:id': "user",
 	    '': "home"
 	},
@@ -143,6 +143,11 @@ var App = function () {
         return Mustache.to_html($(temp_selector).html(),
                                 data);
     };
+    
+    app.facebox = function (temp_selector, data) {
+	var html = app.template(temp_selector, data);
+	$.facebox(html);
+    };
 
     app.gohash = function(h) {
 	if(h == '#') {
@@ -181,6 +186,7 @@ var App = function () {
 		loading_counter++;
 		$('#loading').show();
 	    });
+
 	$(document).bind('ajaxComplete', function (evt, req) {
 		loading_counter--;
 		if(loading_counter <= 0) {
@@ -188,6 +194,13 @@ var App = function () {
 		    loading_counter = 0;
 		}
 	    });
+	
+	$(document).delegate('textarea', 'keydown', function (evt) {
+		if(evt.keyCode == 13 && evt.ctrlKey) {
+		    $(evt.currentTarget).parents('form').submit();
+		}
+	    });
+
 	$('#loading').hide();
 	
 	var header_touch_point = null;
@@ -221,11 +234,11 @@ var App = function () {
 		$('#notify-area').hide();
 	    });
 
-	//app.fetchNotification();
-	/*setInterval(function () {
+	app.fetchNotification();
+	setInterval(function () {
 		app.fetchNotification(); 
 	    }, 30 * 1000);
-	*/
+
 	app.getUser(null, function (u) {
 		app.loginuser = u;
 		$(document).trigger('metadata.ready');
@@ -258,6 +271,9 @@ var App = function () {
 			    });
 			v.render();
 		    } 
+		    if(typeof opts.render_complete == 'function') {
+			opts.render_complete();
+		    }
 		    _.map(data.models, function (status) {
 			    app.statusCache.set(url, status);
 			});
@@ -276,7 +292,10 @@ var App = function () {
 	app.loginuser.set_background();
 	app.addUpdateView();
 	app.getTimeline('/proxy/statuses/mentions?format=html', {
-		view_classes: 'mentions'
+		view_classes: 'mentions',
+		    render_complete: function () {
+		    $('#navigation #mentions a').html('提到我的');
+		}
 	    });
     };
 
@@ -291,7 +310,6 @@ var App = function () {
     app.getHomeTimeline = function () {
 	app.loginuser.set_background();
 	app.addUpdateView();
-
 	app.getTimeline('/proxy/statuses/friends_timeline?format=html', {
 		view_classes: 'home'
 	    });
@@ -301,6 +319,7 @@ var App = function () {
 	app.loginuser.set_background();
 	app.addUpdateView();
 	app.getTimeline('/proxy/search/public_timeline?format=html&q=' + query, {view_classes: 'search'});
+	app.sidebarHome();
     };
 
     app.search_form = function () {
@@ -308,7 +327,7 @@ var App = function () {
 		el: $('#sidebar')
 	    });
 	v.render();
-	//app.getSavedSearch();
+	app.getSavedSearch();
     };
 
     app.logout = function () {
@@ -414,15 +433,10 @@ var App = function () {
 	var url = '/proxy/account/notification';
 	$.ajax(url, {
 		'success': function(data) {
-		    var s = '';
-		    if(data.direct_messages > 0) {
-			s += ' <a href="javascript:App.gohash(\'#!/dm\');">有新的私信</a>';
-		    } 
 		    if(data.mentions > 0) {
-			s += ' <a href="javascript:App.gohash(\'#!/mentions\');">有新提示消息</a>';
-		    }
-		    if(s) {
-			app.notifyTitle(s);
+			$('#navigation #mentions a').html('提到我的(' + data.mentions + ')');
+		    } else {
+			$('#navigation #mentions a').html('提到我的');
 		    }
 		}
 	    });
@@ -454,7 +468,7 @@ var App = function () {
     app.getTrends = function () {
 	if(cached_trends) {
 	    var v = new TrendsView({
-		    el: $('#query'),
+		    el: $('#search'),
 		    title: '饭否热词',
 		    model: cached_trends
 		});
@@ -467,7 +481,7 @@ var App = function () {
 	trends.fetch({
 		'success': function (data) {
 		    var v = new TrendsView({
-			    el: $('#query'),
+			    el: $('#search'),
 			    title: '饭否热词',
 			    model: data
 			});
@@ -479,13 +493,14 @@ var App = function () {
 	    });
     };
     var cached_saved_search = null;
-    $(document).bind('cacheRefresh', function () {
+    /*$(document).bind('cacheRefresh', function () {
 	    cached_saved_search = null;
-	});
+	    }); */
+
     app.getSavedSearch = function () {
 	if(cached_saved_search) {
 	    var v = new QueryListView({
-		    el: $('#query'),
+		    el: $('#search'),
 		    title: '保存搜索',
 		    collection: cached_saved_search
 		});
@@ -499,7 +514,7 @@ var App = function () {
 	trends.fetch({
 		'success': function (data) {
 		    var v = new QueryListView({
-			    el: $('#query'),
+			    el: $('#search'),
 			    title: '保存搜索',
 			    collection: data
 			});
@@ -649,6 +664,45 @@ var App = function () {
 	    });
 	view.render();
 	app.search_form();
+    };
+
+    app.replyStatus = function (statusid) {
+	app.getStatus(statusid, function (orig) {
+		orig = orig.toJSON();
+		var view = new UpdateStatusView({
+			as_box: true,
+			text: '@' + orig.user.name + ' ',
+			in_reply_to_status_id: statusid
+		    });
+		view.render();
+	    });
+
+    };
+
+    app.repostStatus = function (statusid) {
+	app.getStatus(statusid, function (orig) {
+		orig = orig.toJSON();
+		var s = orig.text.replace(/<(.|\n)*?>/g, '');
+		var view = new UpdateStatusView({
+			as_box: true,
+			text: '转@' + orig.user.name + ' ' + s,
+			repost_status_id: statusid
+		    });
+		view.render();
+	    });
+    };
+    
+    app.deleteStatus = function (statusid) {
+	if(confirm('确定删除此消息')) {
+	    var url = '/proxy/statuses/destroy';
+	    $.ajax(url, {
+		    type: 'POST',
+			data: "id=" + statusid,
+			'success': function (data) {
+			$('#timeline').trigger('status.destroy', statusid);
+		    }
+		});
+	}
     };
     return app;
 }();

@@ -107,17 +107,15 @@ app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
     });
 
 app.post('/upload', function (req, res) {
-	console.info('session', req.session);
 	var form = new formidable.IncomingForm();
 	form.parse(req, function (err, fields, files) {
-		console.info(err, files);
 		res.send(files.Filedata);
 	    });
     });
 app.post('/statuses/update', apivendor.require_login, function(req, res) {
 	var form = new formidable.IncomingForm();
 	form.parse(req, function(err, fields, files) {
-		if((files.photo && files.photo.size == 0) ||
+		if((files.photo && files.photo.size > 0) ||
 		   fields.uploaded_file) {
 		    if(fields.uploaded_file) {
 			files = {'photo': JSON.parse(fields.uploaded_file)};
@@ -157,7 +155,6 @@ app.post('/statuses/update', apivendor.require_login, function(req, res) {
 app.post('/proxy/:section/:action', apivendor.require_login, function(req, res) {
 	var path = '/' + req.params.section + '/' + req.params.action;
 	var api = apivendor.from_request(req);
-	console.info('xxx', req.body);
 	api.post(path, req.body, {
 		'success': function (data) {
 		    res.send(data);

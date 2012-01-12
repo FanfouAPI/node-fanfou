@@ -94,11 +94,15 @@
       <input type="hidden" name="repost_status_id" value="{{ repost_status_id }}"/>
       <input type="hidden" name="in_reply_to_status_id" value="{{ in_reply_to_status_id }}"/>
       <input type="hidden" name="location" id="id_location" value=""/>
-     <div>
-      <input type="submit" class="right formbutton" value="发送"></input>
-     </div>
-      <div class="hide" id="upload">
-	<input type="file" name="photo"/>
+      <input type="hidden" name="uploaded_file" id="id_uploaded_file" value=""/>
+      <div class="clearfix">
+	<div id="fileinfo" class="left"></div>
+	<div id="upload-progress" class="left clearfix" width="100">&nbsp;</div>
+	<input type="submit" class="right formbutton" value="发送"></input>
+	<div id="photo-upload-wrapper" class="right clearfix">
+	  <div id="photo-upload" >
+	  </div>
+	</div>
       </div>
     </form>
   </div>

@@ -21,7 +21,7 @@ body {
 body, textarea,
 input.text-input {
      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-     font-size: 20px;
+     font-size: 16px;
 
 }
 a { text-decoration: none; }
@@ -33,7 +33,7 @@ a { text-decoration: none; }
 
 #header {
 	border-bottom: 1px solid #AAA;
-	padding: 8px 0;
+	padding: 3px 0;
 	background: #EEE;
 	background: -webkit-gradient(linear,0 0,0 bottom, from(white), to(#CBCBCB));
 	background: -webkit-linear-gradient(white, #CBCBCB);
@@ -50,11 +50,11 @@ a { text-decoration: none; }
 }
 
 .commands button {
-  	  padding: 4px 6px;
-	  height: 36px;
-	  line-height: 28px;
+  	  padding: 2px 3px;
+	  height: 30px;
+	  line-height: 24px;
 	  border: 1px solid #CCC;
-	  font-size: 18px;
+	  font-size: 16px;
 	  display: inline-block;
           background: #CBCBCB;
 	  background: -webkit-gradient(linear,0 0,0 bottom, from(white), to(#CBCBCB));
@@ -91,9 +91,9 @@ a { text-decoration: none; }
 }
 
 .header-button {
-     font-size: 26px;
+     font-size: 20px;
      line-height: 22px;
-     padding: 4px 20px;
+     padding: 2px 15px;
      margin: 2px 6px 2px 2px;
      border-radius: 5px 5px;
      font-weight: bold;
@@ -102,7 +102,7 @@ a { text-decoration: none; }
 }
 
 #logo {
-      padding: 6px 3px 6px 3px;
+      padding: 3px 2px 3px 2px;
       margin: 2px 6px 2px 6px;
 }
 
@@ -117,7 +117,11 @@ a { text-decoration: none; }
 .timeline .status-row { padding: 8px 12px; border-bottom: 1px solid #F2F2F2;}
 .timeline .avatar { width: 54px; height: 50px; margin: 2px 0 0 0;}
 .avatar img { border-radius: 5px 5px; }
-.timeline .status-content { } /* max-width: 900px;}*/
+.timeline .status-content { 
+	  word-break: break-all;
+/*	  word-wrap: break-word; */
+	  overflow: hidden;
+} /* max-width: 900px;}*/
 
 #update-status {
 	       padding: 6px 20px;

@@ -9,3 +9,4 @@ exports.oauth_info = {
 };
 
 exports.daemon_port = 3000;
+exports.project = 'public';

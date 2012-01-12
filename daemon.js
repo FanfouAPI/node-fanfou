@@ -5,17 +5,18 @@ var formidable = require('formidable');
 var fs = require('fs');
 var apivendor = require('./apivendor.js');
 var settings =  require('./settings.js');
-var spec = require('./public_classic/js/spec.js');
+
+function project_file(fn) {
+    return __dirname + '/' + settings.project + fn;
+}
+
+var spec = require(project_file('/js/spec.js'));
 var helper = require('./helper.js');
 apivendor.config(settings.oauth_info);
 
-files = ['public_classic', 'apivendor.js',
+files = [settings.project, 'apivendor.js',
 	 'daemon.js', 'helper.js',
 	 'settings.js'];
-
-function public_file(fn) {
-    return __dirname + '/public_classic' + fn;
-}
 
 // Setup the Express.js server
 var app = express.createServer();
@@ -44,15 +45,16 @@ function to_version(req, res, next) {
 }
 
 app.get('/v/:version', to_version, apivendor.require_login, function(req, res) {
-	res.sendfile(public_file('/dashboard/index.html'));
+	res.sendfile(project_file('/dashboard/index.html'));
     });
 
 app.use('/facebox', express.static(__dirname + '/facebox'));
-app.use('/public', express.static(__dirname + '/public_classic'));
+app.use('/swfupload', express.static(__dirname + '/swfupload'));
+app.use('/public', express.static(project_file('')));
 
 app.get('/app.manifest', function (req, res) {
 	res.header('Content-Type: text/cache-manifest');
-	res.sendfile(public_file('/app.manifest'));
+	res.sendfile(project_file('/app.manifest'));
     });
 
 app.get('/logout', function (req, res) {
@@ -73,7 +75,7 @@ app.get('/api_callback', function(req, res) {
     });
 
 app.get('/app_template/:ver.html', function(req, res) {
-	res.sendfile(public_file('/dashboard/template.html'));
+	res.sendfile(project_file('/dashboard/template.html'));
     });
 
 app.get('/show_account', apivendor.require_login, function(req, res) {
@@ -104,22 +106,23 @@ app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
 	    });
     });
 
+app.post('/upload', function (req, res) {
+	console.info('session', req.session);
+	var form = new formidable.IncomingForm();
+	form.parse(req, function (err, fields, files) {
+		console.info(err, files);
+		res.send(files.Filedata);
+	    });
+    });
 app.post('/statuses/update', apivendor.require_login, function(req, res) {
 	var form = new formidable.IncomingForm();
 	form.parse(req, function(err, fields, files) {
-		if(!files.photo || files.photo.size == 0) {
-		    req.body = fields;
-		    var api = apivendor.from_request(req);
-		    api.post('/statuses/update', fields, {
-			    'success': function (data) {
-				res.header('Content-Type: application/json');
-				res.send(data);
-			    },
-				'error': function (err) {
-				    res.send(err.data, {'Content-Type': 'application/json'}, err.statusCode);
-				}
-			});
-		} else { // Multipart
+		if((files.photo && files.photo.size == 0) ||
+		   fields.uploaded_file) {
+		    if(fields.uploaded_file) {
+			files = {'photo': JSON.parse(fields.uploaded_file)};
+			delete fields['uploaded_file'];
+		    }
 		    var api = apivendor.from_request(req);
 		    helper.compose_multipart(fields, files, function (b, payload) {
 			    api.post('/photos/upload', payload, {
@@ -134,6 +137,19 @@ app.post('/statuses/update', apivendor.require_login, function(req, res) {
 					}
 				});
 			});		    
+
+		} else {
+		    req.body = fields;
+		    var api = apivendor.from_request(req);
+		    api.post('/statuses/update', fields, {
+			    'success': function (data) {
+				res.header('Content-Type: application/json');
+				res.send(data);
+			    },
+				'error': function (err) {
+				    res.send(err.data, {'Content-Type': 'application/json'}, err.statusCode);
+				}
+			});
 		}
 	    });	
     });

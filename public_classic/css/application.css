@@ -170,6 +170,7 @@ body.default {
 	       height: 3.6em;
 	       font-size: 14px;
 	       line-height: 18px;
+	       padding: 2px;
 }
 
 #update-status h2 {
@@ -182,6 +183,18 @@ body.default {
 
 #facebox #update-status textarea {
 	 height: 4.6em;
+}
+
+#update-status #photo-upload-wrapper {
+	       	       /*	       width: 24px;
+	       height: 24px; */
+	       height: 24px;
+	       padding: 2px 4px;
+	       line-height: 40px;
+}
+
+#update-status #upload-progress {
+	       background: green;
 }
 
 /*#update-status .formbutton {
@@ -393,6 +406,7 @@ ul.user-stats span.text {
 	 padding: 0 2px 0 10px;
 	 font-size: 16px;
 }
+
 #search .r-box-content {
 	padding-top: 5px;
 }

@@ -289,6 +289,7 @@ var UpdateStatusView = Backbone.View.extend({
 		this.$('.r-box-content #main-header').html(html);
 		this.$('textarea').focus().click();
 		form = this.$('#update-status form');
+		initSWFUpload(form);
 	    }
 
 	    var view = this;

@@ -5,7 +5,7 @@ var AppRouter = Backbone.Router.extend({
 	    '!/reply/:statusid': 'reply',
 	    '!/repost/:statusid': 'repost',
 	    '!/mentions': 'mentions',
-	    '!/public': 'public_timeline',
+	    '!/browse': 'public_timeline',
 	    '!/statuses/:id': 'status_detail',
 	    '!/q/:query': 'search',
 	    '!/search': 'search_form',

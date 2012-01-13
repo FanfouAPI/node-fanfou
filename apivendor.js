@@ -42,6 +42,7 @@ exports.require_login = function (req, res, next) {
 	if(isajax) {
 	    res.send('Auth required', {'Content-Type': 'application/json'}, 410);
 	} else {
+	    console.info('login redirect', exports.login_url);
 	    res.redirect(exports.login_url);
 	}
 	return;

@@ -18,7 +18,7 @@ if(window.exports == undefined) {
 
 window.load_template = function(callback) {
     var ver = check_version();
-    return $.ajax('/app_template/' + ver + '.html', {
+    return $.ajax('/app_template/mobile/' + ver + '.html', {
 	    cache: true,
 	    success: function (resp) {
 		if(typeof resp == 'string') {
@@ -32,7 +32,7 @@ window.load_template = function(callback) {
 	    },
 	    error: function (err, resp) {
 		console.error(err, resp);
-		window.location = '/';
+		//window.location = '/';
 	    }
 	});
 }
@@ -75,9 +75,9 @@ function parse_date(reprdate) {
 }
 
 window.check_version = function() {
-    var t = /^\/v\/(\d+)/.exec(window.location.pathname);
+    var t = /^\/p\/(\w+)\/(\d+)/.exec(window.location.pathname);
     if(t) {
-	var ver = t[1];
+	var ver = t[2];
 	var curr_ver = localStorage.getItem('version');
 	if(ver != curr_ver) {
 	    localStorage.setItem('version', ver);

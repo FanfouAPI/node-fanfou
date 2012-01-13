@@ -6,17 +6,30 @@ var fs = require('fs');
 var apivendor = require('./apivendor.js');
 var settings =  require('./settings.js');
 
-function project_file(fn) {
-    return __dirname + '/' + settings.project + fn;
-}
+var installed_projects = ['mobile', 'web'];
+var default_project = 'mobile';
 
-var spec = require(project_file('/js/spec.js'));
-var helper = require('./helper.js');
-apivendor.config(settings.oauth_info);
-
-files = [settings.project, 'apivendor.js',
+files = ['apivendor.js',
 	 'daemon.js', 'helper.js',
 	 'settings.js'];
+
+var project_modules = {};
+var project_specs = {};
+
+function project_file(prj, fn) {
+    return __dirname + '/' + prj + fn;
+}
+
+installed_projects.forEach(function (prj) {
+	project_modules[prj] = require('./' + prj + '/project.js');
+	files.push(prj);
+	var spec = require(project_file(prj, '/public/js/spec.js'));
+	project_specs[prj] = spec;
+    });
+
+
+var helper = require('./helper.js');
+apivendor.config(settings.oauth_info);
 
 // Setup the Express.js server
 var app = express.createServer();
@@ -30,60 +43,62 @@ app.use(express.session({
 		}));
 
 var version = helper.get_last_modified.apply({}, files);
-var dashboard_url = '/v/' + version;
+console.info('modified version', version);
 
-app.get('/', apivendor.require_login, function(req, res){
-	res.redirect(dashboard_url);
-    });
-
+function dashboard_url(prj, ver) {
+    if(ver == undefined) {
+	ver = version;
+    }
+    return '/p/' + prj + '/' + ver;
+}
 function to_version(req, res, next) {
     if(req.params.version != '' + version) {
-	res.redirect(dashboard_url);
+	console.info('version mismatch', req.params.version, version);
+	res.redirect(dashboard_url(req.params.project));
     } else {
 	next();
     }
 }
 
-app.get('/v/:version', to_version, apivendor.require_login, function(req, res) {
-	res.sendfile(project_file('/dashboard/index.html'));
+app.get('/p/:project/:version', to_version, apivendor.require_login, function(req, res) {
+	var project = req.params.project;
+	res.sendfile(project_file(project, '/public/dashboard/index.html'));
     });
 
 app.use('/facebox', express.static(__dirname + '/facebox'));
 app.use('/swfupload', express.static(__dirname + '/swfupload'));
-app.use('/public', express.static(project_file('')));
 
-app.get('/app.manifest', function (req, res) {
-	res.header('Content-Type: text/cache-manifest');
-	res.sendfile(project_file('/app.manifest'));
+installed_projects.forEach(function (prj) {
+	app.use('/public/' + prj, express.static(project_file(prj, '/public')));
+	project_modules[prj].installViews(app);
     });
+
 
 app.get('/logout', function (req, res) {
 	apivendor.logout(req);
 	res.redirect('/');
     });
 
-app.get('/api_authorize', function (req, res) {
-	var callback_url = 'http://' + req.headers.host + '/api_callback';
+app.get('/api_authorize/:project', function (req, res) {
+	console.info('api authorize', project);
+	var project = req.params.project;
+	var callback_url = 'http://' + req.headers.host + '/api_callback/' + project;
+	console.info('callback_url', callback_url);
 	apivendor.authorize(req, res, callback_url);
     });
 
-app.get('/api_callback', function(req, res) {
+app.get('/api_callback/:project', function(req, res) {
 	var api = apivendor.from_request(req);
+	var project = req.params.project;
 	api.get_access_token(function(token, secret) {
-		res.redirect(dashboard_url);
+		req.session.project = project;
+		res.redirect(dashboard_url(project));
 	    });
     });
 
-app.get('/app_template/:ver.html', function(req, res) {
-	res.sendfile(project_file('/dashboard/template.html'));
-    });
-
-app.get('/show_account', apivendor.require_login, function(req, res) {
-	var api = apivendor.from_request(req);
-	api.get('/account/verify_credentials',
-		function(data) {
-		    res.send(data);
-		});
+app.get('/app_template/:project/:ver.html', function(req, res) {
+	res.sendfile(project_file(req.params.project, 
+				  '/public/dashboard/template.html'));
     });
 
 app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
@@ -96,6 +111,7 @@ app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
 	api.get(path, {
 		'query': req.query,
 		    'success': function (data) {
+		    var spec = project_specs[req.session.project];
 		    var sk = spec.encodeResult(path, data);
 		    res.send(sk);
 		},
@@ -112,6 +128,7 @@ app.post('/upload', function (req, res) {
 		res.send(files.Filedata);
 	    });
     });
+
 app.post('/statuses/update', apivendor.require_login, function(req, res) {
 	var form = new formidable.IncomingForm();
 	form.parse(req, function(err, fields, files) {
@@ -125,7 +142,6 @@ app.post('/statuses/update', apivendor.require_login, function(req, res) {
 		    helper.compose_multipart(fields, files, function (b, payload) {
 			    api.post('/photos/upload', payload, {
 				    'post_content_type': 'multipart/form-data; boundary=' + b,
-					//'api_host': 'http://localhost:9090',
 					'success': function (data) {
 					res.header('Content-Type: application/json');
 					res.send(data);
@@ -175,6 +191,11 @@ app.get('/rconsole/:level', apivendor.require_login, function (req, res) {
 	}
 	log('REMOTE', req.query.w);
 	res.send('ok');
+    });
+
+app.get('/', apivendor.require_login, function(req, res){
+	var project = req.session.project || default_project;
+	res.redirect(dashboard_url(project));
     });
 
 app.listen(settings.daemon_port);

@@ -1,0 +1,20 @@
+CACHE MANIFEST
+/mobile/public/js/jquery-1.7.min.js
+/mobile/public/js/jquery.form.js
+/mobile/public/js/underscore-min.js
+/mobile/public/js/mustache.min.js
+/mobile/public/js/backbone-min.js
+/mobile/public/js/helper.js
+/mobile/public/js/spec.js
+/mobile/public/js/model.js
+/mobile/public/js/view.js
+/mobile/public/js/app.js
+/mobile/public/js/mockupdata.js
+/mobile/public/css/application.css
+/mobile/public/img/logo.png
+
+NETWORK:
+/board
+/api_callback
+/api_login
+*

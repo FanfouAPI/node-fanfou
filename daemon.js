@@ -43,7 +43,6 @@ app.use(express.session({
 		}));
 
 var version = helper.get_last_modified.apply({}, files);
-console.info('modified version', version);
 
 function dashboard_url(prj, ver) {
     if(ver == undefined) {
@@ -53,7 +52,6 @@ function dashboard_url(prj, ver) {
 }
 function to_version(req, res, next) {
     if(req.params.version != '' + version) {
-	console.info('version mismatch', req.params.version, version);
 	res.redirect(dashboard_url(req.params.project));
     } else {
 	next();
@@ -79,11 +77,19 @@ app.get('/logout', function (req, res) {
 	res.redirect('/');
     });
 
+
 app.get('/api_authorize/:project', function (req, res) {
-	console.info('api authorize', project);
 	var project = req.params.project;
+	if(project == 'smart') {
+	    var ua_pattern = /iphone|ios|ipad|android/i;
+	    if(ua_pattern.test(req.headers['user-agent'])) {
+		project = 'mobile';
+	    } else {
+		project = 'web';
+	    }
+	}
+	console.info(req.headers);
 	var callback_url = 'http://' + req.headers.host + '/api_callback/' + project;
-	console.info('callback_url', callback_url);
 	apivendor.authorize(req, res, callback_url);
     });
 

@@ -68,7 +68,7 @@ app.use('/swfupload', express.static(__dirname + '/swfupload'));
 
 installed_projects.forEach(function (prj) {
 	app.use('/public/' + prj, express.static(project_file(prj, '/public')));
-	project_modules[prj].installViews(app);
+	project_modules[prj].installViews(app, version);
     });
 
 

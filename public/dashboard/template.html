@@ -14,9 +14,11 @@
   <div class="timeline">
     <div class="status-row clearfix" rel="{{ id }}">
       {{# user }}
+<!--
       <div class="avatar left">
 	<a href="javascript:App.gotoUserTimeline('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
       </div>
+-->
       <div class="" style="clear: top;"></div>
       <div class="status-content clearfix">
         <a href="#" class="user" rel="{{ id }}">{{ name }}</a>
@@ -56,9 +58,11 @@
     {{#timeline }}
     <div class="status-row clearfix" rel="{{ id }}" repost="{{ repost_status_id }}">
       {{# user }}
+<!--
       <div class="avatar left">
 	<a href="javascript:App.gotoUserTimeline('{{ id }}');"><img src="{{ profile_image_url }}"></img></a>
       </div>
+-->
       <div class="" style="clear: top;"></div>
       <div class="status-content">
         <a href="#" class="user" rel="{{ id }}">{{ name }}</a>

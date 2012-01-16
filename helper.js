@@ -40,27 +40,39 @@ exports.compose_multipart = function (fields, files, callback) {
 
 function get_last_modified() {
     var lm = 0;
+    var modified = {};
     for(var i=0; i<arguments.length; i++) {
 	var f = arguments[i];
 	var stat = fs.statSync(f);
-	var m;
+	var m = 0;
 	if(stat.isDirectory()) {
 	    var dirlist = fs.readdirSync(f);
 	    for(var j=0; j<dirlist.length; j++) {
 		var de = dirlist[j];
-		m = get_last_modified(f + '/' + de);
+		var path = f + '/' + de;
+		var dm = get_last_modified(path);
+		for(var key in dm) {
+		    if(key == '__last_modified') {
+			m = dm['__last_modified'];
+		    } else {
+			modified[key] = dm[key];
+		    }
+		}
+
 		if(m > lm) {
 		    lm = m;
 		}
 	    }
 	} else {
 	    m = new Date(stat.mtime).getTime() / 1000;
+	    modified[f] = m;
 	    if(m > lm) {
 		lm = m;
 	    }
 	}
     }
-    return lm;
+    modified['__last_modified'] = lm;
+    return modified;
 }
 
 exports.get_last_modified = get_last_modified;

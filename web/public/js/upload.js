@@ -33,6 +33,7 @@ function initSWFUpload (form) {
 	'button_text_top_padding': 2,
 	'file_types': '*.jpg;*.gif;*.png',
 	'file_queue_limit': 1,
+	'prevent_swf_caching': false,
 	'file_queued_handler': on_file_queued,
 	'upload_progress_handler': on_upload_progress,
 	'upload_success_handler': on_upload_success

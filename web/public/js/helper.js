@@ -18,7 +18,7 @@ if(window.exports == undefined) {
 
 window.load_template = function(callback) {
     var ver = check_version();
-    return $.ajax('/app_template/web/' + ver + '.html', {
+    return $.ajax('/pub.' + ver + '/web/dashboard/template.html', {
 	    cache: true,
 	    success: function (resp) {
 		if(typeof resp == 'string') {
@@ -32,7 +32,7 @@ window.load_template = function(callback) {
 	    },
 	    error: function (err, resp) {
 		console.error(err, resp);
-		window.location = '/';
+		//window.location = '/';
 	    }
 	});
 }

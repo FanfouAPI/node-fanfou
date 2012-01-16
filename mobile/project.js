@@ -13,6 +13,7 @@ var appCacheUrls = [
 		'/public/mobile/js/mockupdata.js',
 		'/public/mobile/css/application.css',
 		'/public/mobile/img/logo.png',
+		'/public/mobile/dashboard/template.html',
 		];
 
 exports.installViews = function (app, version) {
@@ -20,11 +21,11 @@ exports.installViews = function (app, version) {
 	//res.sendfile(project_file('mobile', '/app.manifest'));
 	var c = 'CACHE MANIFEST\n';
 	appCacheUrls.forEach(function (url) {
+		url = url.replace('/public/', '/pub.' + version + '/');
 		c += url + '\n';
 	    });
-	c += '/app_template/mobile/' + version + '.html\n';
 	c += '\n';
-	c += 'NETWORK\n';
+	c += 'NETWORK:\n';
 	c += '*\n';	
 	res.header('Content-Type: text/cache-manifest');
 	res.send(c);

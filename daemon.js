@@ -5,6 +5,7 @@ var formidable = require('formidable');
 var fs = require('fs');
 var apivendor = require('./apivendor.js');
 var settings =  require('./settings.js');
+var maxAge = 60 * 60 * 24 * 365; // One Year
 
 var installed_projects = ['mobile', 'web'];
 var default_project = 'mobile';
@@ -41,8 +42,8 @@ app.use(express.cookieParser());
 app.use(express.session({
 	    secret: "skjghskdjfhbqigohqdioukd"
 		}));
-
-var version = helper.get_last_modified.apply({}, files);
+var modified = helper.get_last_modified.apply({}, files);
+var version = modified.__last_modified;
 
 function dashboard_url(prj, ver) {
     if(ver == undefined) {
@@ -50,6 +51,7 @@ function dashboard_url(prj, ver) {
     }
     return '/p/' + prj + '/' + ver;
 }
+
 function to_version(req, res, next) {
     if(req.params.version != '' + version) {
 	res.redirect(dashboard_url(req.params.project));
@@ -60,14 +62,38 @@ function to_version(req, res, next) {
 
 app.get('/p/:project/:version', to_version, apivendor.require_login, function(req, res) {
 	var project = req.params.project;
-	res.sendfile(project_file(project, '/public/dashboard/index.html'));
+	//res.sendfile(project_file(project, '/public/dashboard/index.html'));
+	var path = project_file(project, '/public/dashboard/index.html');
+	fs.readFile(path, 'utf-8', function (err, data) {
+		if(err) {
+		    res.send('not found', 404);
+		} else {
+		    data = data.replace(/%VERSION%/ig, version);
+		    var expires = new Date();
+		    expires.setTime(expires.getTime() + maxAge * 1000);
+		    res.setHeader('Expires', expires.toUTCString());
+		    res.setHeader('Cache-Control', 'public,max-age=' + maxAge);
+		    res.send(data, 200);
+		}
+	    });
     });
 
-app.use('/facebox', express.static(__dirname + '/facebox'));
-app.use('/swfupload', express.static(__dirname + '/swfupload'));
+
+app.use('/facebox', express.static(__dirname + '/facebox', {maxAge: maxAge * 1000}));
+app.use('/swfupload', express.static(__dirname + '/swfupload', {maxAge: maxAge * 1000}));
+
+app.get(/^\/pub.(\d+)\/(web|mobile)\/(.*)/, function (req, res) {
+	var prj = req.params[1];
+	var path = '/public/' + req.params[2];
+	var expires = new Date();
+	expires.setTime(expires.getTime() + maxAge * 1000);
+	res.setHeader('Expires', expires.toUTCString());
+	res.setHeader('Cache-Control', 'public,max-age=' + maxAge);
+	res.sendfile(project_file(prj, path));
+    });
 
 installed_projects.forEach(function (prj) {
-	app.use('/public/' + prj, express.static(project_file(prj, '/public')));
+	app.use('/public/' + prj, express.static(project_file(prj, '/public'), {maxAge: maxAge * 1000}));
 	project_modules[prj].installViews(app, version);
     });
 
@@ -88,7 +114,6 @@ app.get('/api_authorize/:project', function (req, res) {
 		project = 'web';
 	    }
 	}
-	console.info(req.headers);
 	var callback_url = 'http://' + req.headers.host + '/api_callback/' + project;
 	apivendor.authorize(req, res, callback_url);
     });
@@ -98,13 +123,9 @@ app.get('/api_callback/:project', function(req, res) {
 	var project = req.params.project;
 	api.get_access_token(function(token, secret) {
 		req.session.project = project;
+		console.info('set session project', project);
 		res.redirect(dashboard_url(project));
 	    });
-    });
-
-app.get('/app_template/:project/:ver.html', function(req, res) {
-	res.sendfile(project_file(req.params.project, 
-				  '/public/dashboard/template.html'));
     });
 
 app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {

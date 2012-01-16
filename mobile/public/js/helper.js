@@ -18,7 +18,7 @@ if(window.exports == undefined) {
 
 window.load_template = function(callback) {
     var ver = check_version();
-    return $.ajax('/app_template/mobile/' + ver + '.html', {
+    return $.ajax('/pub.' + ver + '/mobile/dashboard/template.html', {
 	    cache: true,
 	    success: function (resp) {
 		if(typeof resp == 'string') {

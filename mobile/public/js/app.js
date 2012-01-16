@@ -118,6 +118,7 @@ var App = function () {
     var app = new Object();
     app.loginuser = null;
     app.statusCache = new ModelCache(Status, 'status');
+    app.load_avatar = undefined;
 
     app.ready = function(fn) {
         if(app.loginuser) {
@@ -284,10 +285,18 @@ var App = function () {
 		return;
 	    }
 	}
+	var startDate = new Date();
+	console.info('startDate', startDate);
 	var timeline = new Timeline();
 	timeline.url = url;
 	timeline.fetch({
 		'success': function (data) {
+		    var now = new Date();
+		    if(app.load_avatar == undefined) {
+			app.load_avatar = (now - startDate) < 3000;
+		    }
+		    console.info(url, app.load_avatar, now - startDate);
+
 		    if(opts.success) {
 			opts.success(data);
 		    } else {

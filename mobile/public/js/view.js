@@ -60,6 +60,7 @@ var StatusView = Backbone.View.extend({
 				    loc + '&zoom=13&size=200x200&sensor=false');
 	    }
 	    status.created_at = parse_date(status.created_at);
+	    status.load_avatar = App.load_avatar;
 	    var html = App.template('#status-template', status);
 	    var dom = $(html);
 	    process_status_dom(dom);
@@ -160,7 +161,8 @@ var TimelineView = Backbone.View.extend({
 	    
 	    var html = App.template('#timeline-template', {
 		    prefix: this.prefix,
-		    timeline: timeline
+		    timeline: timeline,
+		    load_avatar: App.load_avatar
 		});
 	    var dom = $(html);
 	    process_status_dom(dom);

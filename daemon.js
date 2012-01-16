@@ -45,57 +45,9 @@ app.use(express.session({
 var modified = helper.get_last_modified.apply({}, files);
 var version = modified.__last_modified;
 
-function dashboard_url(prj, ver) {
-    if(ver == undefined) {
-	ver = version;
-    }
-    return '/p/' + prj + '/' + ver;
-}
-
-function to_version(req, res, next) {
-    if(req.params.version != '' + version) {
-	res.redirect(dashboard_url(req.params.project));
-    } else {
-	next();
-    }
-}
-
-app.get('/p/:project/:version', to_version, apivendor.require_login, function(req, res) {
-	var project = req.params.project;
-	//res.sendfile(project_file(project, '/public/dashboard/index.html'));
-	var path = project_file(project, '/public/dashboard/index.html');
-	fs.readFile(path, 'utf-8', function (err, data) {
-		if(err) {
-		    res.send('not found', 404);
-		} else {
-		    data = data.replace(/%VERSION%/ig, version);
-		    var expires = new Date();
-		    expires.setTime(expires.getTime() + maxAge * 1000);
-		    res.setHeader('Expires', expires.toUTCString());
-		    res.setHeader('Cache-Control', 'public,max-age=' + maxAge);
-		    res.send(data, 200);
-		}
-	    });
-    });
-
-
+/** static files */
 app.use('/facebox', express.static(__dirname + '/facebox', {maxAge: maxAge * 1000}));
 app.use('/swfupload', express.static(__dirname + '/swfupload', {maxAge: maxAge * 1000}));
-
-app.get(/^\/pub.(\d+)\/(web|mobile)\/(.*)/, function (req, res) {
-	var prj = req.params[1];
-	var path = '/public/' + req.params[2];
-	var expires = new Date();
-	expires.setTime(expires.getTime() + maxAge * 1000);
-	res.setHeader('Expires', expires.toUTCString());
-	res.setHeader('Cache-Control', 'public,max-age=' + maxAge);
-	res.sendfile(project_file(prj, path));
-    });
-
-installed_projects.forEach(function (prj) {
-	app.use('/public/' + prj, express.static(project_file(prj, '/public'), {maxAge: maxAge * 1000}));
-	project_modules[prj].installViews(app, version);
-    });
 
 
 app.get('/logout', function (req, res) {
@@ -104,30 +56,85 @@ app.get('/logout', function (req, res) {
     });
 
 
-app.get('/api_authorize/:project', function (req, res) {
-	var project = req.params.project;
-	if(project == 'smart') {
-	    var ua_pattern = /iphone|ios|ipad|android/i;
-	    if(ua_pattern.test(req.headers['user-agent'])) {
-		project = 'mobile';
+// Per project routing
+installed_projects.forEach(function (project) {
+	function prjurl(url) {
+	    return '/' + project + url;
+	}
+
+	function dashboard_url(ver) {
+	    if(ver == undefined) {
+		ver = version;
+	    }
+	    return prjurl('/p/' + ver);
+	}
+
+	function to_version(req, res, next) {
+	    if(req.params.version != '' + version) {
+		res.redirect(dashboard_url());
 	    } else {
-		project = 'web';
+		next();
 	    }
 	}
-	var callback_url = 'http://' + req.headers.host + '/api_callback/' + project;
-	apivendor.authorize(req, res, callback_url);
-    });
 
-app.get('/api_callback/:project', function(req, res) {
-	var api = apivendor.from_request(req);
-	var project = req.params.project;
-	api.get_access_token(function(token, secret) {
-		req.session.project = project;
-		console.info('set session project', project);
-		res.redirect(dashboard_url(project));
+	app.use(prjurl('/public/'), express.static(project_file(project, '/public'), {maxAge: maxAge * 1000}));
+	project_modules[project].installViews(app, version);
+
+	app.get(prjurl('/p/:version'), to_version, apivendor.require_login, function(req, res) {
+		var path = project_file(project, '/public/dashboard/index.html');
+		fs.readFile(path, 'utf-8', function (err, data) {
+			if(err) {
+		    res.send('not found', 404);
+			} else {
+			    data = data.replace(/%VERSION%/ig, version);
+			    var expires = new Date();
+			    expires.setTime(expires.getTime() + maxAge * 1000);
+			    res.setHeader('Expires', expires.toUTCString());
+			    res.setHeader('Cache-Control', 'public,max-age=' + maxAge);
+			    res.send(data, 200);
+			}
+		    });
+	    });
+	
+	var public_re = new RegExp('/' + project + '/pub.(\\d+)/(.*)');
+	app.get(public_re, function (req, res) {
+		var path = '/public/' + req.params[1];
+		console.info('pub', path);
+		var expires = new Date();
+		expires.setTime(expires.getTime() + maxAge * 1000);
+		res.setHeader('Expires', expires.toUTCString());
+		res.setHeader('Cache-Control', 'public,max-age=' + maxAge);
+		res.sendfile(project_file(project, path));
+	    });
+
+	app.get(prjurl('/api_authorize/'), function (req, res) {
+		var callback_url = 'http://' + req.headers.host + '/' + project + '/api_callback/';
+		apivendor.authorize(req, res, callback_url);
+	    });
+	
+	app.get(prjurl('/api_callback/'), function(req, res) {
+		var api = apivendor.from_request(req);
+		api.get_access_token(function(token, secret) {
+			req.session.project = project;
+			var durl = dashboard_url();
+			console.info(durl);
+			res.redirect(durl);
+		    });
 	    });
     });
 
+app.get('/smart_api_authorize', function (req, res) {
+	var ua_pattern = /iphone|ios|ipad|android/i;
+	if(ua_pattern.test(req.headers['user-agent'])) {
+	    project = 'mobile';
+	} else {
+	    project = 'web';
+	}
+	var callback_url = 'http://' + req.headers.host + '/' + project + '/api_callback/';
+	apivendor.authorize(req, res, callback_url);
+    });
+
+// API Proxy	
 app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
 	var path = '/' + req.params.section + '/' + req.params.action;	
 	if(req.params.action == 'index') {
@@ -222,7 +229,7 @@ app.get('/rconsole/:level', apivendor.require_login, function (req, res) {
 
 app.get('/', apivendor.require_login, function(req, res){
 	var project = req.session.project || default_project;
-	res.redirect(dashboard_url(project));
+	res.redirect('/' + project + '/p/' + version); //dashboard_url(project));
     });
 
 app.listen(settings.daemon_port);

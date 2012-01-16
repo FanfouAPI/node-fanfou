@@ -18,7 +18,7 @@ if(window.exports == undefined) {
 
 window.load_template = function(callback) {
     var ver = check_version();
-    return $.ajax('/pub.' + ver + '/web/dashboard/template.html', {
+    return $.ajax('/web/pub.' + ver + '/dashboard/template.html', {
 	    cache: true,
 	    success: function (resp) {
 		if(typeof resp == 'string') {
@@ -97,7 +97,7 @@ function parse_date_str(reprdate) {
 }
 
 window.check_version = function() {
-    var t = /^\/p\/(\w+)\/(\d+)/.exec(window.location.pathname);
+    var t = /^\/(\w+)\/p\/(\d+)/.exec(window.location.pathname);
     if(t) {
 	var ver = t[2];
 	var curr_ver = sessionStorage.getItem('version');

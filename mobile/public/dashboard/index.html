@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html manifest="/app.mobile.manifest">
+<html manifest="/mobile/app.manifest">
   <head>
     <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,minimum-scale=1,user-scalable=0">
     <title>ABC Lab</title>
-    <link rel="stylesheet" type="text/css" href="/pub.%VERSION%/mobile/css/application.css"></link>
-    <script text="text/javascript" src="/public/mobile/js/jquery-1.7.min.js"></script>
-    <script language="javascript">
-      //jQuery = $;
-    </script>
-    <script text="text/javascript" src="/public/mobile/js/jquery.form.js"></script>
-    <script text="text/javascript" src="/public/mobile/js/underscore-min.js"></script>
-    <script text="text/javascript" src="/public/mobile/js/mustache.min.js"></script>
-    <script text="text/javascript" src="/public/mobile/js/backbone-min.js"></script>
-    <script text="text/javascript" src="/pub.%VERSION%/mobile/js/helper.js"></script>
-    <script text="text/javascript" src="/pub.%VERSION%/mobile/js/spec.js"></script>
-    <script text="text/javascript" src="/pub.%VERSION%/mobile/js/model.js"></script>
-    <script text="text/javascript" src="/pub.%VERSION%/mobile/js/view.js"></script>
-    <script text="text/javascript" src="/pub.%VERSION%/mobile/js/app.js"></script>
+    <link rel="stylesheet" type="text/css" href="/mobile/pub.%VERSION%/css/application.css"></link>
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/jquery-1.7.min.js"></script>
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/jquery.form.js"></script>
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/underscore-min.js"></script>
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/mustache.min.js"></script>
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/backbone-min.js"></script>
+
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/helper.js"></script>
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/spec.js"></script>
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/model.js"></script>
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/view.js"></script>
+    <script text="text/javascript" src="/mobile/pub.%VERSION%/js/app.js"></script>
     <script language="javascript">
       //<!--
       $(document).ready(function () {
@@ -35,6 +33,7 @@
       <div id="loading" class="clearfix left" onclick="App.gohash('#!/update');">...</div>
     </div>
 
+
     <div id="commands" class="hide commands clearfix">
       <button onclick="App.gohash('#!/browse');">随便看看</button>
       <button onclick="App.gohash('#!/mentions');">提到我的</button>
@@ -42,6 +41,7 @@
       <button onclick="App.gohash('#!/dm');">私信</button>
       <button onclick="App.gohash('#!/search');">搜索</button>
     </div>
+
     </div>
     <div id="wrapper" class="clearfix">
       <div id="notify-area" class="hide"></div>

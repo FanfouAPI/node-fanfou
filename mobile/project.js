@@ -1,27 +1,28 @@
 
 var appCacheUrls = [
-		'/public/mobile/js/jquery-1.7.min.js',
-		'/public/mobile/js/jquery.form.js',
-		'/public/mobile/js/underscore-min.js',
-		'/public/mobile/js/mustache.min.js',
-		'/public/mobile/js/backbone-min.js',
-		'/public/mobile/js/helper.js',
-		'/public/mobile/js/spec.js',
-		'/public/mobile/js/model.js',
-		'/public/mobile/js/view.js',
-		'/public/mobile/js/app.js',
-		'/public/mobile/js/mockupdata.js',
-		'/public/mobile/css/application.css',
-		'/public/mobile/img/logo.png',
-		'/public/mobile/dashboard/template.html',
+		'/mobile/public/js/jquery-1.7.min.js',
+		'/mobile/public/js/jquery.form.js',
+		'/mobile/public/js/underscore-min.js',
+		'/mobile/public/js/mustache.min.js',
+		'/mobile/public/js/backbone-min.js',
+
+		'/mobile/public/js/helper.js',
+		'/mobile/public/js/spec.js',
+		'/mobile/public/js/model.js',
+		'/mobile/public/js/view.js',
+		'/mobile/public/js/app.js',
+		'/mobile/public/js/mockupdata.js',
+		'/mobile/public/css/application.css',
+		'/mobile/public/img/logo.png',
+		'/mobile/public/dashboard/template.html',
 		];
 
 exports.installViews = function (app, version) {
-    app.get('/app.mobile.manifest', function (req, res) {
+    app.get('/mobile/app.manifest', function (req, res) {
 	//res.sendfile(project_file('mobile', '/app.manifest'));
 	var c = 'CACHE MANIFEST\n';
 	appCacheUrls.forEach(function (url) {
-		url = url.replace('/public/', '/pub.' + version + '/');
+		url = url.replace('/mobile/public/', '/mobile/pub.' + version + '/');
 		c += url + '\n';
 	    });
 	c += '\n';

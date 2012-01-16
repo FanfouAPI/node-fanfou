@@ -286,14 +286,14 @@ var App = function () {
 	    }
 	}
 	var startDate = new Date();
-	console.info('startDate', startDate);
 	var timeline = new Timeline();
 	timeline.url = url;
 	timeline.fetch({
 		'success': function (data) {
 		    var now = new Date();
 		    if(app.load_avatar == undefined) {
-			app.load_avatar = (now - startDate) < 3000;
+			// Don't show avatar if the network condition is bad
+			app.load_avatar = (now - startDate) < 1000; 
 		    }
 		    console.info(url, app.load_avatar, now - startDate);
 

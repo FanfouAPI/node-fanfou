@@ -28,7 +28,7 @@ exports.installViews = function (app, version) {
 	c += '\n';
 	c += 'NETWORK:\n';
 	c += '*\n';	
-	res.header('Content-Type: text/cache-manifest');
+	res.setHeader('Content-Type: text/cache-manifest');
 	res.send(c);
     });
 };

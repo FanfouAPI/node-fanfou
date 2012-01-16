@@ -9,10 +9,15 @@
       <div id="navigation" class="right r-box">
 	<div class="r-box-content clearfix">
 	  <ul class="left">
-	    <li><a href="javascript:App.gohash('#');">首页</a></li>
-	    <li><a href="javascript:App.gohash('#!/' + App.loginuser.get('id'));">我的空间</a></li>
-	    <li id="mentions"><a href="javascript:App.gohash('#!/mentions');">提到我的</a></li>
-	    <li><a href="javascript:App.gohash('#!/browse');">随便看看</a></li>
+	    <li><a href="javascript:App.gohash('#');"
+		   prefetch="/proxy/statuses/friends_timeline?format=html">首页</a></li>
+	    <li><a href="javascript:App.gohash('#!/' + App.loginuser.get('id'));"
+		   prefetch="">我的空间</a></li>
+	    <li id="mentions">
+	         <a href="javascript:App.gohash('#!/mentions');"
+		    prefetch="/proxy/statuses/mentions?format=html"
+		    >提到我的</a></li>
+	    <li><a href="javascript:App.gohash('#!/browse');" prefetch="/proxy/statuses/public_timeline?format=html">随便看看</a></li>
 	    <li><a href="javascript:App.logout();">退出</a></li>
 	  </ul>
 	</div>
@@ -232,7 +237,8 @@
   <div id="trends" class="query-list clearfix">
     <div>{{ title }}</div>
     {{#trends }}
-    <span><a href="#!/q/{{ query }}">{{ name }}</a></span>
+    <span><a href="#!/q/{{ query }}"
+	     prefetch="/proxy/search/public_timeline?format=html&q={{ name }}">{{ name }}</a></span>
     {{/trends }}
   </div>
 </script>

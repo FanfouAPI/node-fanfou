@@ -200,6 +200,29 @@ var App = function () {
 		    $(evt.currentTarget).parents('form').submit();
 		}
 	    });
+	
+	app.clickStat = { sum: 0, times: 0};
+
+	$(document).delegate('a', 'mouseover', function (evt) {
+		tm = new Date();
+		var a = $(evt.currentTarget);
+		var prefurl = a.attr('prefetch');
+		if(prefurl) {
+		    app.prefetchTimeline(prefurl);
+		}
+	    });
+	$(document).delegate('a', 'click', function (evt) {
+		if(tm) {
+		    var t = new Date();
+		    app.clickStat.sum += t - tm;
+		    app.clickStat.times += 1;
+		    /*console.info('click stat', 
+				 app.clickStat.sum / app.clickStat.times,
+				 app.clickStat.sum,
+				 app.clickStat.times); */
+		    tm = null;
+		}
+	    });
 
 	$('#loading').hide();
 	
@@ -252,6 +275,9 @@ var App = function () {
 
     app.timelineCache = new ModelCache(Timeline, 'timeline1');
 
+    app.prefetchTimeline = function (url) {
+	app.timelineCache.prefetch(url);
+    };
     app.getTimeline = function (url, opts) {
 	opts = opts || {};
 	app.timelineCache.fetch(url, {
@@ -278,7 +304,6 @@ var App = function () {
 			    app.statusCache.set(url, status);
 			});
 		}, 'error': function (err, req) {
-		    console.error(err, req, opts.error);
 		    if(opts.error) {
 			opts.error(err, req);
 		    } else {
@@ -372,7 +397,6 @@ var App = function () {
     };
 
     app.getUserTimeline = function (userid) {
-	//app.addUpdateView();
 	app.getUser(userid, function (u) {
 		u.set_background();
 		var el = $('#main #main-header');
@@ -389,9 +413,6 @@ var App = function () {
 	    error: function (err, req) {
 		if(req.status == 403) {
 		    $('#main').unbind();
-		    /*var view = new ProtectedTimelineView({
-			    el: $('#main')
-			    }); */
 		    var view = new TimelineView({
 			    collection: new Timeline(),
 			    el: $('#main'),
@@ -635,7 +656,6 @@ var App = function () {
     app.layout = function (mode) {
 	if($('#layout-' + mode).length <= 0) {
 	    var html = app.template('#layout-' + mode + '-template', {});
-	    //$('#content-layout').html(html);
 	    if($('.container').length) {
 		$('.container').replaceWith(html);		
 	    } else {

@@ -120,15 +120,27 @@ function ModelCache(model, prefix) {
     function get(key) {
        var json = sessionStorage.getItem(_prefix + key);
        if(json) {
-	   //return JSON.parse(json);
-	   return new _model(JSON.parse(json));
+	   json = JSON.parse(json);
+	   var cache_set_time = json.cache_set_time;
+	   if(json.magic) {
+	       json = json.array;
+	   }
+	   var obj = new _model(json);
+	   obj.cache_set_time = cache_set_time;
+	   return obj;
 	} else {
 	    return null;
 	}
     }
 
     function set(key, obj) {
-	sessionStorage.setItem(_prefix + key, JSON.stringify(obj.toJSON()));
+	obj = obj.toJSON();
+	if(obj instanceof Array) {
+	    obj = {'magic': true, array: obj, cache_set_time: new Date().getTime()};
+	} else {
+	    obj.cache_set_time = new Date().getTime();
+	}
+	sessionStorage.setItem(_prefix + key, JSON.stringify(obj));
     }
 
     function updateModel(key, obj, use_set) {
@@ -141,6 +153,47 @@ function ModelCache(model, prefix) {
 	} else if(use_set){
 	    set(key, new _model(obj));
 	}
+    }
+    
+    var prefetching = {};
+    
+    function prefetch (url) {
+	var model = new _model();
+	model.url = url;
+	var callobjs = prefetching[url];
+	if(!callobjs) {
+	    callobjs = Array();
+	    prefetching[url] = callobjs;
+	}
+
+	model.fetch({
+		'complete': function () {
+		    //console.info('prefetching complete');
+		    delete prefetching[url];
+		},
+		'success': function (data) {
+		    var callobjs = prefetching[url];
+		    set(url, data);
+		    if(callobjs) {
+			_.map(callobjs, function (opts) {
+				//console.info('calling');
+				if(typeof opts.success == 'function') {
+				    opts.success(data);
+				}
+			    });
+		    }
+		},
+		'error': function (err, resp) {
+		    var callobjs = prefetching[url];
+		    if(callobjs) {
+			_.map(callobjs, function (opts) {
+				if(typeof opts.error == 'function') {
+				    opts.error(err, resp);
+				}
+			    });
+		    }
+		}
+	    });
     }
 
     function fetch(url, opts) {
@@ -157,39 +210,50 @@ function ModelCache(model, prefix) {
 	    if(u) {
 		// Cache hit.
 		opts.success(u);
-		if(opts.only_cache) {
+		if(opts.only_cache ||
+		   (new Date().getTime() - u.cache_set_time < 2000)) {
+		    // cache within one second is considiered the desired one.
+		    //console.info('found', url);
 		    return;
 		}
 	    }
         }
         // Request from server
-        u = new _model();
-        u.url = url;
-        u.fetch({
-		success: function (data) {
-		    if(!disable_cache) {
-			set(key, data);
-		    }
-		    if(typeof opts.success == 'function') {
-			opts.success(data);
-		    } else {
-			console.warn('opts.success is not a function');
-		    }
-		},
-		error: function () {
-		    if(typeof opts.error == 'function') {
-			opts.error.apply(u, arguments);
-		    } else {
-			App.notifyTitle('找不着对象' + key);
-		    }
+	var fetch_opts = {
+	    success: function (data) {
+		if(!disable_cache) {
+		    set(key, data);
 		}
-	    });
+		if(typeof opts.success == 'function') {
+		    opts.success(data);
+		} else {
+		    console.warn('opts.success is not a function');
+		}
+	    },
+	    error: function () {
+		if(typeof opts.error == 'function') {
+		    opts.error.apply(u, arguments);
+		} else {
+		    App.notifyTitle('找不着对象' + key);
+		}
+	    }
+	};
+	if(prefetching[url] != undefined) {
+	    //console.info('prefetching push opts');
+	    prefetching[url].push(fetch_opts);
+	} else {
+	    //console.info('no cache fetching it');
+	    u = new _model();
+	    u.url = url;
+	    u.fetch(fetch_opts);
+	}
     }
     return {
         'get': get,
-        'set': set,
-	'erase': erase,
-	'fetch': fetch,
-	'updateModel': updateModel
+	    'set': set,
+	    'erase': erase,
+	    'fetch': fetch,
+	    'prefetch': prefetch,
+	    'updateModel': updateModel
     };
 }

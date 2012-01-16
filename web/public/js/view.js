@@ -53,6 +53,7 @@ var SearchView = Backbone.View.extend({
 var StatusView = Backbone.View.extend({
 	events: {
 	    'click a.user': 'click_userlink',
+	    'mouseover a.user': 'mouseover_userlink',
 	    'click .image': 'click_image'
 	},
 
@@ -64,6 +65,11 @@ var StatusView = Backbone.View.extend({
 	    }
 	    evt.stopPropagation();
 	},
+
+	mouseover_userlink: function (evt) {
+	    console.info('mouse over', 'ok');
+	    var userid = $(evt.currentTarget).attr('rel');
+	    },
 
 	click_image: function (evt) {
 	    var div = $(evt.currentTarget);
@@ -78,7 +84,6 @@ var StatusView = Backbone.View.extend({
 
 	render: function() {
 	    var status = this.model.toJSON();
-	    console.info(status);
 	    if(!status.photo || !status.photo.imageurl) {
 		status.photo = null;
 	    }
@@ -93,6 +98,7 @@ var StatusView = Backbone.View.extend({
 var TimelineView = Backbone.View.extend({
 	events: {
 	    'click a.user': 'click_userlink',
+	    'mouseover a.user': 'mouseover_userlink',
 	    'click .image': 'click_image',
 	    'click #timeline-more': 'more_timeline',
 	    'click #timeline-top': 'to_top',
@@ -127,6 +133,14 @@ var TimelineView = Backbone.View.extend({
 		App.gotoUserTimeline(userid);
 	    }
 	    evt.stopPropagation();
+	},
+
+	mouseover_userlink: function (evt) {
+	    var userid = $(evt.currentTarget).attr('rel');
+	    if(userid) {
+		userid = encodeURIComponent(userid);
+		App.prefetchTimeline('/proxy/statuses/user_timeline?format=html&id=' + userid);
+	    }
 	},
 
 	click_image: function (evt) {
@@ -226,7 +240,6 @@ var TimelineView = Backbone.View.extend({
 	more_timeline: function (evt) {
 	    var max_id = this.$('.status-row:last').attr('rel');
 	    var more_url = this.url + (this.url.indexOf('?') >= 0? '&': '?') + 'max_id=' + max_id;
-	    console.info(more_url);
 	    var rows = this.$('#timeline-rows');
 	    
 	    var view = this;
@@ -631,7 +644,6 @@ var SidebarUserView = Backbone.View.extend({
 	},
 	render: function () {
 	    var user = this.model.toJSON();
-	    console.info(user);
 	    var html = App.template('#sidebar-user-template', user);
 	    this.el.html(html);
 	}

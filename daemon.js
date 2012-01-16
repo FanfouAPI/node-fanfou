@@ -99,7 +99,6 @@ installed_projects.forEach(function (project) {
 	var public_re = new RegExp('/' + project + '/pub.(\\d+)/(.*)');
 	app.get(public_re, function (req, res) {
 		var path = '/public/' + req.params[1];
-		console.info('pub', path);
 		var expires = new Date();
 		expires.setTime(expires.getTime() + maxAge * 1000);
 		res.setHeader('Expires', expires.toUTCString());
@@ -117,7 +116,6 @@ installed_projects.forEach(function (project) {
 		api.get_access_token(function(token, secret) {
 			req.session.project = project;
 			var durl = dashboard_url();
-			console.info(durl);
 			res.redirect(durl);
 		    });
 	    });

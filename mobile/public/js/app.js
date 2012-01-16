@@ -295,7 +295,6 @@ var App = function () {
 			// Don't show avatar if the network condition is bad
 			app.load_avatar = (now - startDate) < 1000; 
 		    }
-		    console.info(url, app.load_avatar, now - startDate);
 
 		    if(opts.success) {
 			opts.success(data);

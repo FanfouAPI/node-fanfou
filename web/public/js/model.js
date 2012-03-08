@@ -25,8 +25,8 @@ var User = Backbone.Model.extend({
     });
 
 var Query = Backbone.Model.extend({});
-
 var DirectMessage = Backbone.Model.extend({});
+var List = Backbone.Model.extend({});
 
 // Collections
 var Timeline = Backbone.Collection.extend({
@@ -66,4 +66,8 @@ var DMConvList = Backbone.Collection.extend({
 	    var sk = exports.decodeDMConvList(resp);
 	    return sk;
 	}	
+    });
+
+var ListCollection = Backbone.Collection.extend({
+	model: List,
     });

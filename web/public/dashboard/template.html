@@ -394,3 +394,21 @@
     </div>
   </div>
 </script>
+
+<script id="sidebar-list-template" type="text/template">
+  <div id="sidebar-list" class="clearfix">
+    <h3>关注的分组</h3>
+    <div class="r-box-content">
+      <div id="sidebar-list-content" class="clearfix">
+	
+      </div>
+    </div>
+  </div>
+</script>
+
+<script id="sidebar-list-names-template" type="text/template">
+ {{# colls }}
+   <div><a href="javascript:App.gohash('#!/lists/{{id}}');">{{ name }}</a>
+     创建者 {{# user }} {{ name }} {{/ user }}</div>
+ {{/ colls }}
+</script>

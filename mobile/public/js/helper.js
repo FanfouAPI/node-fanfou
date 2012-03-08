@@ -31,7 +31,7 @@ window.load_template = function(callback) {
 		}
 	    },
 	    error: function (err, resp) {
-		console.error(err, resp);
+		rconsole.error(err, resp);
 		//window.location = '/';
 	    }
 	});

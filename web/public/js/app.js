@@ -8,6 +8,7 @@ var AppRouter = Backbone.Router.extend({
 	    '!/browse': 'public_timeline',
 	    '!/statuses/:id': 'status_detail',
 	    '!/q/:query': 'search',
+	    '!/lists/:listid': 'listview',
 	    //'!/search': 'search_form',
 	    //'!/friends': 'friends_list',
 	    //'!/dm/:peerid': 'direct_message_conversation',
@@ -49,6 +50,13 @@ var AppRouter = Backbone.Router.extend({
 					repost_status_id: statusid
 					});
 			});
+		});
+	},
+
+	listview: function (listid) {
+	    App.layout('wide');
+	    App.ready(function (app) {
+		    app.listview(listid);
 		});
 	},
 
@@ -340,6 +348,12 @@ var App = function () {
 	    });
     };
 
+    app.listview = function (listid) {
+	app.loginuser.set_background();
+	app.getTimeline('/proxy/2/lists/statuses?list_id=' + listid+ '&format=html', {view_classes: 'listview'});
+	app.sidebarHome();
+    };
+
     app.search = function (query) {
 	app.loginuser.set_background();
 	app.addUpdateView();
@@ -481,10 +495,37 @@ var App = function () {
 	    });
     };
 
+    app.getLists = function (userid) {
+	var view = new SidebarListView({
+		el: $('#sidebar')
+	    });
+	view.render();
+
+	var listcol = new ListCollection();
+	var url = '/proxy/2/lists/all';
+	if(userid != undefined) {
+	    url += '?user_id=' + userid;
+	}
+	listcol.url = url;
+	listcol.fetch({
+		'success': function (data) {
+		    var view = new SidebarListNamesView({
+			    el: $('#sidebar-list-content'),
+			    collection: data
+			});
+		    view.render();
+		}, 'error': function (err, req) {
+		    app.handleError(err, req);
+		}
+	    });
+    };
+
+
     var cached_trends = null;
     $(document).bind('cacheRefresh', function () {
 	    cached_trends = null;
 	});
+
 
     app.getTrends = function () {
 	if(cached_trends) {
@@ -513,6 +554,7 @@ var App = function () {
 		}
 	    });
     };
+
     var cached_saved_search = null;
     /*$(document).bind('cacheRefresh', function () {
 	    cached_saved_search = null;
@@ -673,6 +715,7 @@ var App = function () {
 			model: u
 		    });
 		view.render();
+		app.getLists(userid);
 	    });
     };
 
@@ -684,6 +727,7 @@ var App = function () {
 	    });
 	view.render();
 	app.search_form();
+	app.getLists();
     };
 
     app.replyStatus = function (statusid) {

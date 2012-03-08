@@ -77,7 +77,9 @@ installed_projects.forEach(function (project) {
 	    }
 	}
 
-	app.use(prjurl('/public/'), express.static(project_file(project, '/public'), {maxAge: maxAge * 1000}));
+	app.use(prjurl('/public/'), 
+		express.static(project_file(project, '/public'), 
+			       {maxAge: maxAge * 1000}));
 	project_modules[project].installViews(app, version);
 
 	app.get(prjurl('/p/:version'), to_version, apivendor.require_login, function(req, res) {
@@ -100,10 +102,17 @@ installed_projects.forEach(function (project) {
 	app.get(public_re, function (req, res) {
 		var path = '/public/' + req.params[1];
 		var expires = new Date();
-		expires.setTime(expires.getTime() + maxAge * 1000);
-		res.setHeader('Expires', expires.toUTCString());
-		res.setHeader('Cache-Control', 'public,max-age=' + maxAge);
+		if(project != 'mobile') {
+		    expires.setTime(expires.getTime() + maxAge * 1000);
+		    res.setHeader('Expires', expires.toUTCString());
+		    res.setHeader('Cache-Control', 'public,max-age=' + maxAge);
+		} else {
+		    expires.setTime(expires.getTime() + 2000);
+		    res.setHeader('Expires', expires.toUTCString());
+		    res.setHeader('Cache-Control', 'max-age: 2');
+		}
 		res.sendfile(project_file(project, path));
+		//fs.readFile(project_file(project, path), 'utf-8', );
 	    });
 
 	app.get(prjurl('/api_authorize/'), function (req, res) {
@@ -133,6 +142,27 @@ app.get('/smart_api_authorize', function (req, res) {
     });
 
 // API Proxy	
+app.get('/proxy/2/:section/:action', apivendor.require_login, function(req, res) {
+	var path = '/2/' + req.params.section + '/' + req.params.action;	
+	if(req.params.action == 'index') {
+	    path = '/2/' + req.params.section;
+	}
+	var api = apivendor.from_request(req);
+	delete req.query['_'];
+	api.get(path, {
+		'query': req.query,
+		    'success': function (data) {
+		    var spec = project_specs[req.session.project];
+		    var sk = spec.encodeResult(path, data);
+		    res.send(sk);
+		},
+		    'error': function (err) {
+			console.info(err.data, {'Content-Type': 'application/json'}, err.statusCode);
+			res.send(err.data, {'Content-Type': 'application/json'}, err.statusCode);
+		    }
+	    });
+    });
+
 app.get('/proxy/:section/:action', apivendor.require_login, function(req, res) {
 	var path = '/' + req.params.section + '/' + req.params.action;	
 	if(req.params.action == 'index') {

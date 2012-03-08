@@ -160,7 +160,7 @@ var App = function () {
 		    // Browser downloaded a new app cache.
 		    // Swap it in and reload the page to get the new hotness.
 		    window.applicationCache.swapCache();
-		    if (confirm('ABC有新版本了. 安装?')) {
+		    if (confirm('有新版本了. 安装?')) {
 			window.location.reload();
 		    }
 		} else {

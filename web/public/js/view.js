@@ -345,6 +345,29 @@ var TrendsView = Backbone.View.extend({
 	}
     });
 
+var ListNamesView = Backbone.View.extend({
+	events: {},
+	initialize: function (opts) {
+	    this.title = opts.title;
+	},
+	render: function () {
+	    var trends = _.map(this.model.get('trends'), function (q) {
+		    return {
+			'name': q.name,
+			'query': encodeURIComponent(q.query)
+		    }
+		});
+	    if(trends.length) {
+		var html = App.template('#trends-template', {
+			trends: trends,
+			title: this.title
+		    });
+		//$(html).insertAfter(this.el);
+		this.$('.r-box-content').append(html);
+	    }
+	}
+    });
+
 var QueryListView = Backbone.View.extend({
 	events: {},
 	initialize: function (opts) {
@@ -640,7 +663,6 @@ var SidebarHomeView = Backbone.View.extend({
 var SidebarUserView = Backbone.View.extend({
 	events: {},
 	initialize: function () {
-	    
 	},
 	render: function () {
 	    var user = this.model.toJSON();
@@ -648,3 +670,26 @@ var SidebarUserView = Backbone.View.extend({
 	    this.el.html(html);
 	}
     });
+
+var SidebarListView = Backbone.View.extend({
+	events: {},
+	initialize: function () {},
+	render: function () {
+	    var html = App.template('#sidebar-list-template', {});
+	    this.el.append(html);
+	}
+    });
+
+var SidebarListNamesView = Backbone.View.extend({
+	events: {},
+	initialize: function () {},
+	render: function () {
+	    var collections = _.map(this.collection.models, function (model) {
+		    return model.toJSON();
+		});
+	    var html = App.template('#sidebar-list-names-template',
+                       {colls: collections});
+	    this.el.html(html);
+	}
+    });
+

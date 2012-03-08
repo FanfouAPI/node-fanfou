@@ -11,7 +11,6 @@ var appCacheUrls = [
 		'/mobile/public/js/model.js',
 		'/mobile/public/js/view.js',
 		'/mobile/public/js/app.js',
-		'/mobile/public/js/mockupdata.js',
 		'/mobile/public/css/application.css',
 		'/mobile/public/img/logo.png',
 		'/mobile/public/dashboard/template.html',
@@ -19,7 +18,6 @@ var appCacheUrls = [
 
 exports.installViews = function (app, version) {
     app.get('/mobile/app.manifest', function (req, res) {
-	//res.sendfile(project_file('mobile', '/app.manifest'));
 	var c = 'CACHE MANIFEST\n';
 	appCacheUrls.forEach(function (url) {
 		url = url.replace('/mobile/public/', '/mobile/pub.' + version + '/');
